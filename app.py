@@ -31,11 +31,6 @@ st.write("Команда проекта: некий Вадим, некий Ко�
 
 st.title("Загрузи файл с пивой сюда, друг")
 uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
-if uploaded_file is not None:
-  data = pd.read_csv(uploaded_file)
-  d = ProfileReport(data)
-  st.write("Твой EDA, брат")
-  print(d)
 
 #чтение данных
 def read_data():
