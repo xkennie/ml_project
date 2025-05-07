@@ -3,7 +3,7 @@
 #база
 #!pip install streamlit
 #!pip install ydata-profiling
-sudo pip3 install scikit-learn
+!pip install scikit-learn
 import os
 import numpy as np
 import pandas as pd
