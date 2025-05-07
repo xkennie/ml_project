@@ -88,7 +88,7 @@ def logistic_regression():
   return logreg_predicts
 
 #tree
-def tree(max_depth_target, min_samples_split_target):
+def tree(max_depth_target = 10, min_samples_split_target = 10):
   X_train, X_test, y_train, y_test = preprocess(df)
   tree = DecisionTreeClassifier(
     max_depth = max_depth_target,             # Максимальная глубина
@@ -103,7 +103,7 @@ def tree(max_depth_target, min_samples_split_target):
   return tree_predicts
 
 #forest
-def random_forest(estimators_target):
+def random_forest(estimators_target = 50):
   X_train, X_test, y_train, y_test = preprocess(df)
   random_forest = RandomForestClassifier(
     n_estimators = estimators_target,  # Число деревьев
@@ -117,7 +117,7 @@ def random_forest(estimators_target):
   return random_forest_predicts
 
 #xgboost
-def xgboost(learning_rate_target, estimators_target, max_depth_target):
+def xgboost(learning_rate_target = 0.01, estimators_target = 50, max_depth_target = 10):
   X_train, X_test, y_train, y_test = preprocess(df)
   le = LabelEncoder()
   y_train = le.fit_transform(y_train)
@@ -146,7 +146,7 @@ def svc():
   svc_predicts.columns = ['index', 'Style', 'SVC_predict']
   return svc_predicts
 #knn
-def knn_classifier(neighbors_target):
+def knn_classifier(neighbors_target = 10):
   X_train, X_test, y_train, y_test = preprocess(df)
   knn = KNeighborsClassifier(n_neighbors= neighbors_target)
   knn.fit(X_train, y_train)
@@ -156,7 +156,7 @@ def knn_classifier(neighbors_target):
   knn_predicts.columns = ['index', 'Style', 'KNN_predict']
   return knn_predicts
 
-def perceptron_classifier(layers_target, neurons_target, learning_rate_target = 0.01,
+def perceptron_classifier(layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
                           epochs_target = 10, activation_function_target = 'relu'):
   X_train, X_test, y_train, y_test = preprocess(df)
   #y_train encode
@@ -202,7 +202,7 @@ available_functions = {
     'knn_classifier': knn_classifier,
     'perceptron_classifier': perceptron_classifier
 }
-ProfileReport(df)
+
 st.title("ML Ансамбль")
 
 # ======= Выбор моделей =======
