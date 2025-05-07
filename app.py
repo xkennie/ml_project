@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 #import matplotlib.pyplot as plt
+import scikit_learn as sklearn
 from sklearn.model_selection import train_test_split
 #from ydata_profiling import ProfileReport
 from sklearn.metrics import precision_score, recall_score
