@@ -31,11 +31,10 @@ st.write("Команда проекта: некий Вадим, некий Ко�
 
 st.title("Загрузи файл с пивой сюда, друг")
 uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
-
+if uploaded_file is not None:
+  df = pd.read_csv(uploaded_file)
 #чтение данных
-def read_data():
-  if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
+def read_data(df):
   for column in ['Size(L)',
  'OG',
  'FG',
@@ -69,7 +68,7 @@ def preprocess(df):
   return X_train, X_test, y_train, y_test
 
 #функции с реализациями методов ML
-df = read_data()
+df = read_data(df)
 #logreg
 def logistic_regression():
   X_train, X_test, y_train, y_test = preprocess(df)
