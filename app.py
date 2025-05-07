@@ -29,10 +29,11 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
 
-
+uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
 #чтение данных
 def read_data():
-  df = pd.read_csv("piva.csv")
+  if uploaded_file is not None:
+    df_from_file = pd.read_csv(uploaded_file, sep = ";")
   for column in ['Size(L)',
  'OG',
  'FG',
