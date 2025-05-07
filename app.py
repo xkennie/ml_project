@@ -27,7 +27,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
 st.title("Проект по анализу данных. No-code для создания ансамбля")
-st.wrtie("Команда проекта: некий Вадим, некий Константин, некий Андрей, некая Таня")
+st.write("Команда проекта: некий Вадим, некий Константин, некий Андрей, некая Таня")
 
 st.subtitle("Загрузи файл с пивой сюда, друг")
 uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
