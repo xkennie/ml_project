@@ -236,8 +236,8 @@ if st.button("Запустить ансамбль"):
     merged_df['overall_predict'] = merged_df.apply(majority_vote, axis=1)
 
     # ======= Accuracy (если есть столбец ground truth) =======
-    if 'true_label' in merged_df.columns:
-        acc = (merged_df['overall_predict'] == merged_df['true_label']).mean()
+    if 'Style' in merged_df.columns:
+        acc = (merged_df['overall_predict'] == merged_df['Style']).mean()
         st.write(f"Accuracy: {acc:.2%}")
     
     st.write("Результат ансамбля:")
