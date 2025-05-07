@@ -157,7 +157,7 @@ def knn_classifier(neighbors_target = 10):
   return knn_predicts
 
 def perceptron_classifier(layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
-                          epochs_target = 10, activation_function_target = 'relu'):
+                          epochs_target = 10):
   X_train, X_test, y_train, y_test = preprocess(df)
   #y_train encode
   label_encoder = LabelEncoder()
@@ -169,7 +169,7 @@ def perceptron_classifier(layers_target = 2, neurons_target = 50, learning_rate_
 
   perceptron = Sequential()
   for n in range(layers_target):
-    perceptron.add(Dense(neurons_target, input_dim = X_train.shape[1], activation = activation_function_target))  # Скрытые слои
+    perceptron.add(Dense(neurons_target, input_dim = X_train.shape[1], activation = 'relu'))  # Скрытые слои
   
   perceptron.add(Dense(y_train.shape[1], activation = 'softmax'))  # Выходной слой
 
