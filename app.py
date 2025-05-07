@@ -68,7 +68,9 @@ def preprocess(df):
   return X_train, X_test, y_train, y_test
 
 #функции с реализациями методов ML
-df = read_data(df)
+if uploaded_file is not None:
+  df = read_data(df)
+#df = read_data(df)
 #logreg
 def logistic_regression():
   X_train, X_test, y_train, y_test = preprocess(df)
