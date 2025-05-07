@@ -70,10 +70,7 @@ def preprocess(df):
 #функции с реализациями методов ML
 if uploaded_file is not None:
   df = read_data(df)
-  d = ProfileReport(df)
-  print(d)
-d = ProfileReport(df)
-print(d)
+
   #st.write(d)
 #df = read_data(df)
 #logreg
@@ -205,7 +202,7 @@ available_functions = {
     'knn_classifier': knn_classifier,
     'perceptron_classifier': perceptron_classifier
 }
-
+ProfileReport(df)
 st.title("ML Ансамбль")
 
 # ======= Выбор моделей =======
