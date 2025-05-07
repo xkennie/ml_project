@@ -29,7 +29,7 @@ from keras.utils import to_categorical
 st.title("Проект по анализу данных. No-code для создания ансамбля")
 st.write("Команда проекта: некий Вадим, некий Константин, некий Андрей, некая Таня")
 
-st.subtitle("Загрузи файл с пивой сюда, друг")
+st.title("Загрузи файл с пивой сюда, друг")
 uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
 
 d = ProfileReport(pd.read_csv(uploaded_file))
