@@ -72,7 +72,8 @@ if uploaded_file is not None:
   df = read_data(df)
   d = ProfileReport(df)
   print(d)
-  st.write(d)
+print(d)
+  #st.write(d)
 #df = read_data(df)
 #logreg
 def logistic_regression():
