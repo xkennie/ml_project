@@ -8,14 +8,10 @@ import os
 import numpy as np
 import pandas as pd
 import streamlit as st
-
-
 from sklearn.model_selection import train_test_split
 #from ydata_profiling import ProfileReport
-from sklearn.metrics import precision_score, recall_score
 import inspect
 from collections import Counter
-
 #classification models
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
