@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 from sklearn.model_selection import train_test_split
-#from ydata_profiling import ProfileReport
+from ydata_profiling import ProfileReport
 import inspect
 from collections import Counter
 #classification models
@@ -26,8 +26,14 @@ from tensorflow.keras.optimizers import Adam
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
+st.title("Проект по анализу данных. No-code для создания ансамбля")
+st.wrtie("Команда проекта: некий Вадим, некий Константин, некий Андрей, некая Таня")
 
+st.subtitle("Загрузи файл с пивой сюда, друг")
 uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
+
+d = ProfileReport(pd.read_csv(uploaded_file))
+print(d)
 
 #чтение данных
 def read_data():
