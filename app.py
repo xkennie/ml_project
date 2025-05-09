@@ -206,8 +206,7 @@ def preprocess(X_train, X_test, y_train, y_test):
     
 #функции с реализациями методов ML
 X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
-  #st.write(d)
-#df = read_data(df)
+  
 #logreg
 def logistic_regression(X_train, X_test, y_train, y_test):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
@@ -330,7 +329,15 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
   perceptron_predicts["index"] = [i for i in range(1000)]
   perceptron_predicts = perceptron_predicts[["index", "Style", "Perceptron_predict"]]                        
   return perceptron_predicts
-
+# ======== Models row ============
+deps = st.text_input("max_depth", value = 10)
+minsamples = st.text_input("min_samples", value = 10)
+if st.button("Гони дерево") and deps and minsamples:
+  result = tree(X_train, X_test, y_train, y_test, max_depth_target = deps, min_samples_split_target = minsamples)
+  acc = (result['Tree_predict'] == result['Style']).mean()
+  st.write(f"Accuracy: {acc:.2%}")
+  st.write(result.head())
+  
 # ======= Доступные функции =======
 available_functions = {
     'logistic_regression': logistic_regression,
