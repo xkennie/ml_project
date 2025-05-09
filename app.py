@@ -333,7 +333,7 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
 deps = st.text_input("max_depth", value = 10)
 minsamples = st.text_input("min_samples", value = 10)
 if st.button("Гони дерево") and deps and minsamples:
-  result = tree(X_train, X_test, y_train, y_test, max_depth_target = deps, min_samples_split_target = minsamples)
+  result = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
   acc = (result['Tree_predict'] == result['Style']).mean()
   st.write(f"Accuracy: {acc:.2%}")
   st.write(result.head())
