@@ -292,11 +292,18 @@ func_params = {}
 for name in selected_function_names:
     func = available_functions[name]
     sig = inspect.signature(func)
-    sig = list(sig)
-    sig = sig.remove(X_train)
-    sig = sig.remove(X_test)
-    sig = sig.remove(y_train)
-    sig = sig.remove(y_test)
+    params_to_remove = {'X_train', 'X_test', 'y_train', 'y_test'}
+    new_params = {
+        name: param 
+        for name, param in sig.parameters.items()
+        if name not in params_to_remove
+    }
+    sig = sig.replace(parameters=list(new_params.values()))
+    #sig = list(sig)
+    #sig = sig.remove(X_train)
+    #sig = sig.remove(X_test)
+    #sig = sig.remove(y_train)
+    #sig = sig.remove(y_test)
     st.subheader(f"Параметры для {name}")
     params = {}
     for param in sig.parameters.values():
