@@ -116,7 +116,7 @@ selected_col = st.selectbox(
         options=df.columns,
         index=0
     )
-hist_values = np.histogram(df[selected_col], bins=round( len(df[selected_col])**0.5 ,0))
+hist_values = np.histogram(df[selected_col], bins=int(round( len(df[selected_col])**0.5 ,0)))
     
     # Преобразуем в DataFrame для st.bar_chart
 hist_df = pd.DataFrame({
