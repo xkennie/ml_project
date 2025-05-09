@@ -94,8 +94,8 @@ df = handle_missing_values(df, missing_values_option)
 # Вывод информации о результате
 st.subheader("Результат обработки")
 st.write(f"Выбранный метод: {missing_values_option}")
-st.write(f"Исходное количество строк: {len(df)}")
-st.write(f"Количество строк после обработки: {len(backup_df)}")
+st.write(f"Исходное количество строк: {len(backup_df)}")
+st.write(f"Количество строк после обработки: {len(df)}")
 
 # Показать обработанный датафрейм
 st.dataframe(df)
