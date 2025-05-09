@@ -150,7 +150,7 @@ X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   #st.write(d)
 #df = read_data(df)
 #logreg
-def logistic_regression():
+def logistic_regression(X_train, X_test, y_train, y_test):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   logreg = LogisticRegression(
     multi_class='multinomial',
@@ -179,7 +179,7 @@ def tree(X_train, X_test, y_train, y_test, max_depth_target = 10, min_samples_sp
   return tree_predicts
 
 #forest
-def random_forest(estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10):
+def random_forest(X_train, X_test, y_train, y_test, estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   random_forest = RandomForestClassifier(
     n_estimators = estimators_target,  # Число деревьев
@@ -195,7 +195,7 @@ def random_forest(estimators_target = 50, max_depth_target = 10, min_samples_spl
   return random_forest_predicts
 
 #xgboost
-def xgboost(learning_rate_target = 0.01, estimators_target = 50, max_depth_target = 10):
+def xgboost(X_train, X_test, y_train, y_test, learning_rate_target = 0.01, estimators_target = 50, max_depth_target = 10):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   le = LabelEncoder()
   y_train = le.fit_transform(y_train)
@@ -214,7 +214,7 @@ def xgboost(learning_rate_target = 0.01, estimators_target = 50, max_depth_targe
   return xgboost_predicts
 
 #Support-vector-calc
-def svc():
+def svc(X_train, X_test, y_train, y_test):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   svc = SVC()
   svc.fit(X_train, y_train)
@@ -224,7 +224,7 @@ def svc():
   svc_predicts.columns = ['index', 'Style', 'SVC_predict']
   return svc_predicts
 #knn
-def knn_classifier(neighbors_target = 10):
+def knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = 10):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   knn = KNeighborsClassifier(n_neighbors= neighbors_target)
   knn.fit(X_train, y_train)
@@ -234,7 +234,8 @@ def knn_classifier(neighbors_target = 10):
   knn_predicts.columns = ['index', 'Style', 'KNN_predict']
   return knn_predicts
 
-def perceptron_classifier(layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
+def perceptron_classifier(X_train, X_test, y_train, y_test,
+                          layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
                           epochs_target = 10):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   #y_train encode
