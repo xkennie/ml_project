@@ -45,6 +45,7 @@ if uploaded_file is not None:
   df = pd.read_csv(uploaded_file, sep = sep_sign, decimal = decimal_sign)
   st.write("Твой датасет:")
   st.dataframe(df.head())
+  backup_df = df.copy()
  
 #чтение данных
 def read_data(df):
@@ -94,7 +95,7 @@ df = handle_missing_values(df, missing_values_option)
 st.subheader("Результат обработки")
 st.write(f"Выбранный метод: {missing_values_option}")
 st.write(f"Исходное количество строк: {len(df)}")
-st.write(f"Количество строк после обработки: {len(processed_df)}")
+st.write(f"Количество строк после обработки: {len(backup_df)}")
 
 # Показать обработанный датафрейм
 st.dataframe(df)
