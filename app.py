@@ -103,12 +103,13 @@ def tree(max_depth_target = 10, min_samples_split_target = 10):
   return tree_predicts
 
 #forest
-def random_forest(estimators_target = 50):
+def random_forest(estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10):
   X_train, X_test, y_train, y_test = preprocess(df)
   random_forest = RandomForestClassifier(
     n_estimators = estimators_target,  # Число деревьев
-    max_features='sqrt',  
-    max_iter = 1000
+    max_features='sqrt', 
+    max_depth = max_depth_target,
+    max_samples_split = min_samples_split_target
 )
   random_forest.fit(X_train, y_train)
   y_pred = random_forest.predict(X_test)
