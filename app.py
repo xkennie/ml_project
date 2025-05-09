@@ -292,6 +292,10 @@ func_params = {}
 for name in selected_function_names:
     func = available_functions[name]
     sig = inspect.signature(func)
+    sig = sig.remove(X_train)
+    sig = sig.remove(X_test)
+    sig = sig.remove(y_train)
+    sig = sig.remove(y_test)
     st.subheader(f"Параметры для {name}")
     params = {}
     for param in sig.parameters.values():
