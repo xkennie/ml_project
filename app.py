@@ -44,13 +44,64 @@ if uploaded_file is not None:
     (".", ","))
   df = pd.read_csv(uploaded_file, sep = sep_sign, decimal = decimal_sign)
   st.write("Твой датасет:")
-  st.write(df.head())
+  st.dataframe(df.head())
  
 #чтение данных
 def read_data(df):
   return df
+def handle_missing_values(df, option):
+    """
+    Обрабатывает пропущенные значения в датафрейме согласно выбранному варианту
+    """
+    df_processed = df.copy()
+    
+    if option == "Дропнуть":
+        df_processed = df_processed.dropna()
+    elif option == "Заменить на ноль":
+        for col in df_processed.columns:
+            if pd.api.types.is_numeric_dtype(df_processed[col]):
+                df_processed[col] = df_processed[col].fillna(0)
+            else:
+                df_processed[col] = df_processed[col].fillna("0")
+    elif option == "Заменить на медиану":
+        for col in df_processed.columns:
+            if pd.api.types.is_numeric_dtype(df_processed[col]):
+                median_val = df_processed[col].median()
+                df_processed[col] = df_processed[col].fillna(median_val)
+            else:
+                df_processed[col] = df_processed[col].fillna("0")
+    
+    return df_processed
+# Основной код Streamlit
+st.title("Обработка пропущенных значений в датафрейме")
+
+# Предполагаем, что датафрейм уже загружен в переменную df
+if 'df' not in globals():
+    st.warning("Датафрейм не найден в памяти. Загрузите данные сначала.")
+    st.stop()
+
+# Выпадающий список для выбора метода обработки пропусков
+missing_values_option = st.selectbox(
+    "Что делать с пропусками?",
+    options=["Заменить на ноль", "Дропнуть", "Заменить на медиану"],
+    index=0  # По умолчанию выбран "Заменить на ноль"
+)
+
+# Обработка датафрейма
+processed_df = handle_missing_values(df, missing_values_option)
+
+# Вывод информации о результате
+st.subheader("Результат обработки")
+st.write(f"Выбранный метод: {missing_values_option}")
+st.write(f"Исходное количество строк: {len(df)}")
+st.write(f"Количество строк после обработки: {len(processed_df)}")
+
+# Показать обработанный датафрейм
+st.dataframe(processed_df)
+
 #обработка данных
-def preprocess(df):
+def preprocess(data):
+  df = data.copy()
   df = df.dropna()
 #df = df[:5000]
   top_50 = df.groupby("Style", as_index = False).agg({'StyleID': 'count'}).sort_values(by = 'StyleID', ascending = False).head(50)["Style"].tolist()
