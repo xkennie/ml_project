@@ -48,20 +48,6 @@ if uploaded_file is not None:
  
 #чтение данных
 def read_data(df):
-  for column in ['Size(L)',
- 'OG',
- 'FG',
- 'ABV',
- 'IBU',
- 'Color',
- 'BoilSize',
- 'BoilGravity',
-  'Efficiency',
-               'MashThickness']:
-  #print(column)
-    df[column] = df[column].str.replace(",", ".")
-    df[column] = df[column].astype(float)
-    df[column] = df[column].fillna(0)
   return df
 #обработка данных
 def preprocess(df):
