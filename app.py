@@ -333,11 +333,11 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 with col1:
   st.subheader("Logistic Regression")
-  if st.button("Создать Logistic Regression модель!"):
+  if True:
     result = logistic_regression(X_train, X_test, y_train, y_test)
     acc = (result['Logreg_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.write(result.head())
+    
 with col2:
   st.subheader("Tree")
   deps = st.text_input("max_depth", value = 10)
@@ -346,43 +346,55 @@ with col2:
     result = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
     acc = (result['Tree_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.write(result.head())
+    
 with col3:
   st.subheader("Random Forest")
   rf_estimators = st.text_input("RF_estimators", value = 50)
   rf_deps = st.text_input("RF_max_depth", value = 10)
   rf_minsamples = st.text_input("RF_min_samples", value = 10)
-  if st.button("Создать модель случайного леса!") and rf_estimators and rf_deps and rf_minsamples:
+  if rf_estimators and rf_deps and rf_minsamples:
     result = random_forest(X_train, X_test, y_train, y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
     acc = (result['Random_Forest_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.write(result.head())
+
 with col4:
   st.subheader("XGBoost")
   xgb_learning_rate = st.text_input("XGB_max_depth", value = 0.01)
   xgb_estimators = st.text_input("XGB_min_samples", value = 50)
   xgb_deps = st.text_input("XGB_max_depth", value = 10)
-  if st.button("Создать модель XGBoost!") and xgb_learning_rate and xgb_estimators and xgb_deps:
+  if  xgb_learning_rate and xgb_estimators and xgb_deps:
     result = xgboost(X_train, X_test, y_train, y_test, learning_rate_target = eval(xgb_learning_rate), estimators_target = eval(xgb_estimators), max_depth_target = eval(xgb_deps))
     acc = (result['XGBoost_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.write(result.head())
+
 with col5:
   st.subheader("SVC")
-  if st.button("Создать SVC модель!"):
+  if True:
     result = svc(X_train, X_test, y_train, y_test)
     acc = (result['SVC_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.write(result.head())
+
 with col6:
   st.subheader("KNN")
   knn_neighbors = st.text_input("knn_neighbors_target", value = 10)
 
-  if st.button("Создать KNN модель") and knn_neighbors:
+  if knn_neighbors:
     result = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
     acc = (result['KNN_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.write(result.head())
+with col7:
+  st.subheader("Perceptron")
+  p_layers_target = st.text_input("layers_target", value = 10)
+  p_neurons_target = st.text_input("neurons_target", value = 0.01)
+  p_learning_rate_target = st.text_input("learning_rate_target", value = 50)
+  p_epochs_target = st.text_input("epochs_target", value = 10)
+  if p_layers_target and p_neurons_target and p_learning_rate_target and p_epochs_target:
+    result =  perceptron_classifier(X_train, X_test, y_train, y_test,
+                          layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
+                          epochs_target = 10) 
+    acc = (result['Perceptron_predict'] == result['Style']).mean()
+    st.write(f"Accuracy: {acc:.2%}")
+
 # ======= Доступные функции =======
 available_functions = {
     'logistic_regression': logistic_regression,
