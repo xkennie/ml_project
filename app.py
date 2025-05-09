@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 from sklearn.model_selection import train_test_split
 from ydata_profiling import ProfileReport
+import IPython
 import inspect
 from collections import Counter
 import seaborn as sns
