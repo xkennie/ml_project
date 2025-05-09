@@ -100,27 +100,58 @@ st.write(f"Количество строк после обработки: {len(d
 # Показать обработанный датафрейм
 st.dataframe(df)
 
-#обработка данных
-def preprocess(data):
-  df = data.copy()
-  df = df.dropna()
-#df = df[:5000]
-  top_50 = df.groupby("Style", as_index = False).agg({'StyleID': 'count'}).sort_values(by = 'StyleID', ascending = False).head(50)["Style"].tolist()
-  df = df[df["Style"].isin(top_50)]
-  X = df.drop(columns=['Style', 'StyleID'])
-  y = df['Style']
-
-#кодирование целевой переменной
-#label_encoder = LabelEncoder()
-#y_encoded = label_encoder.fit_transform(y)
-#y_categorical = to_categorical(y_encoded)
-
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state = 42)
-  return X_train, X_test, y_train, y_test
-
+def preprocess(df):
+    """
+    Функция для подготовки данных к обучению модели:
+    1. Позволяет выбрать таргетную переменную
+    2. Позволяет выбрать признаки для модели
+    3. Разбивает данные на train/test
+    """
+    st.subheader("Подготовка данных для моделирования")
+    
+    # 1. Выбор таргетной переменной (y)
+    target_col = st.selectbox(
+        "Выберите таргетную переменную (y)",
+        options=df.columns,
+        index=0,  # Дефолтное значение - первая колонка
+        key="target_select"
+    )
+    
+    # 2. Выбор признаков (X) - исключаем таргет из возможных признаков
+    available_features = [col for col in df.columns if col != target_col]
+    
+    selected_features = st.multiselect(
+        "Выберите признаки для модели (X)",
+        options=available_features,
+        default=available_features,  # По умолчанию выбираем все доступные признаки
+        key="features_select"
+    )
+    
+    # Проверка, что выбраны хотя бы один признак
+    if not selected_features:
+        st.error("Пожалуйста, выберите хотя бы один признак для модели")
+        return None, None, None, None
+    
+    # Формируем X и y
+    y = df[target_col]
+    X = df[selected_features]
+    
+    # 3. Разбиение на train/test
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, 
+        test_size=0.2, 
+        random_state=42
+    )
+    
+    # Выводим информацию о разбиении
+    st.success("Данные успешно подготовлены!")
+    st.write(f"Выбран таргет: {target_col}")
+    st.write(f"Выбрано признаков: {len(selected_features)}")
+    st.write(f"Размер обучающей выборки: {X_train.shape[0]}")
+    st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
+    
+    return X_train, X_test, y_train, y_test
 #функции с реализациями методов ML
-if uploaded_file is not None:
-  df = read_data(df)
 
   #st.write(d)
 #df = read_data(df)
