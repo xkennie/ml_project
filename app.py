@@ -33,9 +33,9 @@ st.title("Загрузи файл с пивой сюда, друг")
 uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
 if uploaded_file is not None:
   df = pd.read_csv(uploaded_file)
-  df.head()
+  st.write("Твой датасет:")
   st.write(df.head())
-  print(df.head())
+ 
 #чтение данных
 def read_data(df):
   for column in ['Size(L)',
