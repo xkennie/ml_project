@@ -310,7 +310,12 @@ for name in selected_function_names:
         default_val = "" if param.default is param.empty else param.default
         input_val = st.text_input(f"{name} - {param.name}", value=str(default_val))
         params[param.name] = eval(input_val)
+    params.append(X_train)
+    params.append(X_test)
+    params.append(y_train)
+    params.append(y_test)
     func_params[name] = params
+    
 
 # ======= Кнопка запуска =======
 if st.button("Запустить ансамбль"):
