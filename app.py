@@ -109,18 +109,8 @@ st.title("Анализ данных")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.header("Обзор данных")
-    
-    # 1. Pairplot
-    st.subheader("Pairplot")
-    fig1 = sns.pairplot(df)
-    st.pyplot(fig1.fig)
-    
-    # 2. Heatmap корреляций
-    st.subheader("Корреляционная матрица")
-    fig2, ax = plt.subplots()
-    sns.heatmap(df.corr(), annot=True, ax=ax)
-    st.pyplot(fig2)
+  st.write(df.describe())
+  st.write(ProfileReport(df))
 
 with col2:
     st.header("Детальный анализ")
