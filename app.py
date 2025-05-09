@@ -29,7 +29,7 @@ from keras.utils import to_categorical
 st.title("Проект по анализу данных. No-code для создания ансамбля")
 st.write("Команда проекта: некий Вадим, некий Константин, некий Андрей, некая Таня")
 
-st.title("Загрузи файл с пивой сюда, друг")
+st.title("Загрузи файл сюда, друг")
 uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
 if uploaded_file is not None:
   seps = [";", ","]
@@ -88,7 +88,7 @@ missing_values_option = st.selectbox(
 )
 
 # Обработка датафрейма
-processed_df = handle_missing_values(df, missing_values_option)
+df = handle_missing_values(df, missing_values_option)
 
 # Вывод информации о результате
 st.subheader("Результат обработки")
@@ -97,7 +97,7 @@ st.write(f"Исходное количество строк: {len(df)}")
 st.write(f"Количество строк после обработки: {len(processed_df)}")
 
 # Показать обработанный датафрейм
-st.dataframe(processed_df)
+st.dataframe(df)
 
 #обработка данных
 def preprocess(data):
