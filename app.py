@@ -188,8 +188,9 @@ def perceptron_classifier(layers_target = 2, neurons_target = 50, learning_rate_
   y_true = pd.Series(true_styles)
 
   perceptron_predicts = pd.concat([y_true, predict], axis = 1)
-  perceptron_predicts
   perceptron_predicts.columns = ['Style', 'Perceptron_predict']
+  perceptron_predicts["index"] = [i for i in range(1000)]
+  perceptron_predicts = perceptron_predicts[["index", "Style", "Perceptron_predict"]]                        
   return perceptron_predicts
 
 # ======= Доступные функции =======
