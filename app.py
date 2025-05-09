@@ -164,7 +164,7 @@ def logistic_regression():
   return logreg_predicts
 
 #tree
-def tree(max_depth_target = 10, min_samples_split_target = 10):
+def tree(X_train, X_test, y_train, y_test, max_depth_target = 10, min_samples_split_target = 10):
   X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   tree = DecisionTreeClassifier(
     max_depth = max_depth_target,             # Максимальная глубина
