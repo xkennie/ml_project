@@ -12,6 +12,8 @@ from sklearn.model_selection import train_test_split
 from ydata_profiling import ProfileReport
 import inspect
 from collections import Counter
+import seaborn as sns
+import matplotlib.pyplot as plt
 #classification models
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
@@ -99,6 +101,69 @@ st.write(f"Количество строк после обработки: {len(d
 
 # Показать обработанный датафрейм
 st.dataframe(df)
+
+#Посмотреть данные перед работой
+st.title("Анализ данных")
+
+# Создаем две колонки
+col1, col2 = st.columns(2)
+
+with col1:
+    st.header("Обзор данных")
+    
+    # 1. Pairplot
+    st.subheader("Pairplot")
+    fig1 = sns.pairplot(df)
+    st.pyplot(fig1.fig)
+    
+    # 2. Heatmap корреляций
+    st.subheader("Корреляционная матрица")
+    fig2, ax = plt.subplots()
+    sns.heatmap(df.corr(), annot=True, ax=ax)
+    st.pyplot(fig2)
+
+with col2:
+    st.header("Детальный анализ")
+    
+    # 1. Гистограмма для выбранной колонки
+    st.subheader("Гистограмма")
+    selected_col = st.selectbox(
+        "Выберите колонку для гистограммы",
+        options=df.columns,
+        index=0
+    )
+    st.bar_chart(df[selected_col])
+    
+    # 2. Scatter plot с настройками
+    st.subheader("Scatter plot")
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        x_axis = st.selectbox(
+            "Ось X",
+            options=df.columns,
+            index=0
+        )
+    
+    with col2:
+        y_axis = st.selectbox(
+            "Ось Y",
+            options=df.columns,
+            index=1 if len(df.columns) > 1 else 0
+        )
+    
+    with col3:
+        color_col = st.selectbox(
+            "Цвет",
+            options=["None"] + list(df.columns),
+            index=0
+        )
+    
+    if color_col == "None":
+        st.scatter_chart(df, x=x_axis, y=y_axis)
+    else:
+        st.scatter_chart(df, x=x_axis, y=y_axis, color=color_col)
+
 
 st.subheader("Подготовка данных для моделирования")
     
