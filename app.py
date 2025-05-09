@@ -100,17 +100,10 @@ st.write(f"Количество строк после обработки: {len(d
 # Показать обработанный датафрейм
 st.dataframe(df)
 
-def preprocess(df):
-    """
-    Функция для подготовки данных к обучению модели:
-    1. Позволяет выбрать таргетную переменную
-    2. Позволяет выбрать признаки для модели
-    3. Разбивает данные на train/test
-    """
-    st.subheader("Подготовка данных для моделирования")
+st.subheader("Подготовка данных для моделирования")
     
     # 1. Выбор таргетной переменной (y)
-    target_col = st.selectbox(
+target_col = st.selectbox(
         "Выберите таргетную переменную (y)",
         options=df.columns,
         index=0,  # Дефолтное значение - первая колонка
@@ -118,9 +111,9 @@ def preprocess(df):
     )
     
     # 2. Выбор признаков (X) - исключаем таргет из возможных признаков
-    available_features = [col for col in df.columns if col != target_col]
+available_features = [col for col in df.columns if col != target_col]
     
-    selected_features = st.multiselect(
+selected_features = st.multiselect(
         "Выберите признаки для модели (X)",
         options=available_features,
         default=available_features,  # По умолчанию выбираем все доступные признаки
@@ -128,36 +121,37 @@ def preprocess(df):
     )
     
     # Проверка, что выбраны хотя бы один признак
-    if not selected_features:
-        st.error("Пожалуйста, выберите хотя бы один признак для модели")
-        return None, None, None, None
-    
+if not selected_features:
+  st.error("Пожалуйста, выберите хотя бы один признак для модели")
+      
+if selected_features:    
     # Формируем X и y
-    y = df[target_col]
-    X = df[selected_features]
+  y = df[target_col]
+  X = df[selected_features]
     
     # 3. Разбиение на train/test
-    X_train, X_test, y_train, y_test = train_test_split(
+  X_train, X_test, y_train, y_test = train_test_split(
         X, y, 
         test_size=0.2, 
         random_state=42
     )
     
     # Выводим информацию о разбиении
-    st.success("Данные успешно подготовлены!")
-    st.write(f"Выбран таргет: {target_col}")
-    st.write(f"Выбрано признаков: {len(selected_features)}")
-    st.write(f"Размер обучающей выборки: {X_train.shape[0]}")
-    st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
+  st.success("Данные успешно подготовлены!")
+  st.write(f"Выбран таргет: {target_col}")
+  st.write(f"Выбрано признаков: {len(selected_features)}")
+  st.write(f"Размер обучающей выборки: {X_train.shape[0]}")
+  st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
+def preprocess(X_train, X_test, y_train, y_test):
+  return X_train, X_test, y_train, y_test
     
-    return X_train, X_test, y_train, y_test
 #функции с реализациями методов ML
-
+X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   #st.write(d)
 #df = read_data(df)
 #logreg
 def logistic_regression():
-  X_train, X_test, y_train, y_test = preprocess(df)
+  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   logreg = LogisticRegression(
     multi_class='multinomial',
     max_iter = 1000
@@ -171,7 +165,7 @@ def logistic_regression():
 
 #tree
 def tree(max_depth_target = 10, min_samples_split_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(df)
+  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   tree = DecisionTreeClassifier(
     max_depth = max_depth_target,             # Максимальная глубина
     min_samples_split = min_samples_split_target,     # Минимальное число образцов для разделения
@@ -186,7 +180,7 @@ def tree(max_depth_target = 10, min_samples_split_target = 10):
 
 #forest
 def random_forest(estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(df)
+  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   random_forest = RandomForestClassifier(
     n_estimators = estimators_target,  # Число деревьев
     max_features='sqrt', 
@@ -202,7 +196,7 @@ def random_forest(estimators_target = 50, max_depth_target = 10, min_samples_spl
 
 #xgboost
 def xgboost(learning_rate_target = 0.01, estimators_target = 50, max_depth_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(df)
+  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   le = LabelEncoder()
   y_train = le.fit_transform(y_train)
   xgboost = XGBClassifier(
@@ -221,7 +215,7 @@ def xgboost(learning_rate_target = 0.01, estimators_target = 50, max_depth_targe
 
 #Support-vector-calc
 def svc():
-  X_train, X_test, y_train, y_test = preprocess(df)
+  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   svc = SVC()
   svc.fit(X_train, y_train)
   y_pred = svc.predict(X_test)
@@ -231,7 +225,7 @@ def svc():
   return svc_predicts
 #knn
 def knn_classifier(neighbors_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(df)
+  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   knn = KNeighborsClassifier(n_neighbors= neighbors_target)
   knn.fit(X_train, y_train)
   y_pred = knn.predict(X_test)
@@ -242,7 +236,7 @@ def knn_classifier(neighbors_target = 10):
 
 def perceptron_classifier(layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
                           epochs_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(df)
+  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
   #y_train encode
   label_encoder = LabelEncoder()
   y_encoded = label_encoder.fit_transform(y_train)
