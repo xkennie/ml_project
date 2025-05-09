@@ -109,7 +109,7 @@ def random_forest(estimators_target = 50, max_depth_target = 10, min_samples_spl
     n_estimators = estimators_target,  # Число деревьев
     max_features='sqrt', 
     max_depth = max_depth_target,
-    max_samples_split = min_samples_split_target
+    min_samples_split = min_samples_split_target
 )
   random_forest.fit(X_train, y_train)
   y_pred = random_forest.predict(X_test)
