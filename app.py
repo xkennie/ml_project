@@ -108,6 +108,7 @@ def random_forest(estimators_target = 50):
   random_forest = RandomForestClassifier(
     n_estimators = estimators_target,  # Число деревьев
     max_features='sqrt',  
+    max_iter = 1000
 )
   random_forest.fit(X_train, y_train)
   y_pred = random_forest.predict(X_test)
