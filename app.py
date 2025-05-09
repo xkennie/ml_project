@@ -10,7 +10,6 @@ import pandas as pd
 import streamlit as st
 from sklearn.model_selection import train_test_split
 from ydata_profiling import ProfileReport
-import IPython
 import inspect
 from collections import Counter
 import seaborn as sns
@@ -111,7 +110,7 @@ col1, col2 = st.columns(2)
 
 with col1:
   st.write(df.describe())
-  st.write(ProfileReport(df))
+  
 
 with col2:
     st.header("Детальный анализ")
