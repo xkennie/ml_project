@@ -230,10 +230,12 @@ def tree(X_train, X_test, y_train, y_test, max_depth_target = 10, min_samples_sp
 )
   tree.fit(X_train, y_train)
   y_pred = tree.predict(X_test)
+  #y_pred_train = tree.predict(X_train)
   predict = pd.Series(y_pred)
   tree_predicts = pd.concat([y_test.reset_index(), predict], axis = 1)
   #tree_predicts = tree_predicts.replace({0: 'predict'})
   tree_predicts.columns = ['index', 'Style', 'Tree_predict']
+  #return tree_train_predicts, tree_predicts
   return tree_predicts
 
 #forest
@@ -335,9 +337,11 @@ with col1:
   st.subheader("Logistic Regression")
   run_logreg = st.checkbox("Создать модель Логистической Регрессии!")
   if run_logreg:
+    #_, result = logistic_regression(X_train, X_test, y_train, y_test)
     result = logistic_regression(X_train, X_test, y_train, y_test)
     acc = (result['Logreg_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
+    st.write(result)
     
 with col2:
   st.subheader("Tree")
@@ -361,6 +365,7 @@ with col3:
     result = random_forest(X_train, X_test, y_train, y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
     acc = (result['Random_Forest_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
+    st.write(result)
 
 with col4:
   st.subheader("XGBoost")
@@ -372,6 +377,7 @@ with col4:
     result = xgboost(X_train, X_test, y_train, y_test, learning_rate_target = eval(xgb_learning_rate), estimators_target = eval(xgb_estimators), max_depth_target = eval(xgb_deps))
     acc = (result['XGBoost_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
+    st.write(result)
 
 with col5:
   st.subheader("SVC")
@@ -380,6 +386,7 @@ with col5:
     result = svc(X_train, X_test, y_train, y_test)
     acc = (result['SVC_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
+    st.write(result)
 
 with col6:
   st.subheader("KNN")
@@ -389,7 +396,8 @@ with col6:
     result = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
     acc = (result['KNN_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.dataframe(result)
+    st.write(result)
+    
 with col7:
   st.subheader("Perceptron")
   p_layers_target = st.text_input("layers_target", value = 10)
@@ -403,6 +411,7 @@ with col7:
                           epochs_target = 10) 
     acc = (result['Perceptron_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
+    st.write(result)
 
 # ======= Доступные функции =======
 available_functions = {
