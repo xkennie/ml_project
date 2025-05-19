@@ -114,7 +114,7 @@ st.subheader("Гистограмма")
 selected_col = st.selectbox(
         "Выберите колонку для гистограммы",
         options=df.columns,
-        index=0
+        index=2
     )
 hist_values = np.histogram(df[selected_col], bins=int(round( len(df[selected_col])**0.5 ,0)))
     
