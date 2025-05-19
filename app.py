@@ -353,9 +353,12 @@ with col2:
     tree_file = result.to_csv("Tree_result.csv")
     st.download_button(
     label="Скачать данные как CSV",
+    data=result,
+    file_name='tree_data.csv'')
+    st.download_button(
+    label="Скачать данные как CSV",
     data=tree_file,
-    file_name='tree_data.csv',
-    mime='text/csv')
+    file_name='tree_data.csv'')
     
     
 with col3:
