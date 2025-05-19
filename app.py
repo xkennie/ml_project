@@ -351,8 +351,11 @@ with col2:
     st.write("writes table")
     st.write(result)
     tree_file = result.to_csv("Tree_result.csv")
-    st.write("writes file")
-    st.write(tree_file)
+    st.download_button(
+    label="Скачать данные как CSV",
+    data=tree_file,
+    file_name='tree_data.csv',
+    mime='text/csv')
     
     
 with col3:
