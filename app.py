@@ -349,7 +349,7 @@ with col2:
     acc = (result['Tree_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
     st.write(result)
-    st.dataframe(result)
+
     
 with col3:
   st.subheader("Random Forest")
@@ -389,6 +389,7 @@ with col6:
     result = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
     acc = (result['KNN_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
+    st.dataframe(result)
 with col7:
   st.subheader("Perceptron")
   p_layers_target = st.text_input("layers_target", value = 10)
