@@ -348,18 +348,8 @@ with col2:
     result = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
     acc = (result['Tree_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
-    st.write("writes table")
     st.write(result)
-    tree_file = result.to_csv("Tree_result.csv")
-    st.download_button(
-    label="Скачать данные как CSV",
-    data=result,
-    file_name='tree_data.csv')
-    st.download_button(
-    label="Скачать данные как CSV",
-    data=tree_file,
-    file_name='tree_data.csv')
-    
+    st.dataframe(result)
     
 with col3:
   st.subheader("Random Forest")
