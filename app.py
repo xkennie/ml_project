@@ -348,6 +348,12 @@ with col2:
     result = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
     acc = (result['Tree_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
+    st.write("writes table")
+    st.write(result)
+    tree_file = result.to_csv("Tree_result.csv")
+    st.write("writes file")
+    st.write(tree_file)
+    
     
 with col3:
   st.subheader("Random Forest")
