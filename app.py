@@ -166,8 +166,8 @@ if 'df' not in globals():
     st.stop()
 # Информация о пропусках
 st.subheader("Статистика пропущенных значений")
-missing_stats = st.session_state.df.isna().sum()
-missing_percent = (missing_stats / len(st.session_state.df)) * 100
+missing_stats = df.isna().sum()
+missing_percent = (missing_stats / len(df)) * 100
 missing_df = pd.DataFrame({
     "Колонка": missing_stats.index,
     "Количество пропусков": missing_stats.values,
@@ -216,7 +216,7 @@ if show_details:
 # Обработка данных
 if st.button("Обработать пропущенные значения", type="primary"):
     with st.spinner("Обработка данных..."):
-        st.session_state.df = handle_missing_values(st.session_state.df, method)
+        df = handle_missing_values(df, method)
         st.success("Обработка завершена!")
 
         # Вывод результатов
@@ -225,11 +225,11 @@ if st.button("Обработать пропущенные значения", typ
 
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Исходное количество строк", len(st.session_state.backup_df))
+            st.metric("Исходное количество строк", len(backup_df))
         with col2:
-            st.metric("Количество строк после обработки", len(st.session_state.df))
+            st.metric("Количество строк после обработки", len(df))
 
-        st.dataframe(st.session_state.df.head(10))
+        st.dataframe(df.head(10))
 # Выпадающий список для выбора метода обработки пропусков
 #missing_values_option = st.selectbox(
     #"Что делать с пропусками?",
@@ -245,7 +245,7 @@ if st.button("Обработать пропущенные значения", typ
 #st.write(f"Выбранный метод: {missing_values_option}")
 #st.write(f"Исходное количество строк: {len(backup_df)}")
 #st.write(f"Количество строк после обработки: {len(df)}")
-df = st.session_state.df
+#df = st.session_state.df
 # Показать обработанный датафрейм
 st.dataframe(df)
 
