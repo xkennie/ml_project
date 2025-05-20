@@ -173,7 +173,7 @@ missing_df = pd.DataFrame({
     "Количество пропусков": missing_stats.values,
     "Процент пропусков": missing_percent.values.round(2)
 })
-st.dataframe(missing_df.style.highlight_max(axis=0, color="#ffcccc"))
+st.dataframe(missing_df)
 
 # Выбор метода обработки
 st.markdown("---")
