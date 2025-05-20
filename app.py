@@ -39,7 +39,7 @@ if uploaded_file is not None:
   sep_sign = ";"
   sep_sign = st.selectbox(
     "Выберите разделитель",
-    (";", ","))
+    (";", ",", " ", "/"))
   decimal_sign = ","
   decimal_sign = st.selectbox(
     "Выберите отделитель дробной части",
@@ -328,7 +328,7 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
 
   perceptron_predicts = pd.concat([y_true, predict], axis = 1)
   perceptron_predicts.columns = ['Style', 'Perceptron_predict']
-  perceptron_predicts["index"] = [i for i in range(1000)]
+  perceptron_predicts["index"] = [i for i in range(perceptron_predicts.shape[0)]
   perceptron_predicts = perceptron_predicts[["index", "Style", "Perceptron_predict"]]                        
   return perceptron_predicts
 # ======== Models row ============
@@ -400,15 +400,15 @@ with col6:
     
 with col7:
   st.subheader("Perceptron")
-  p_layers_target = st.text_input("layers_target", value = 10)
-  p_neurons_target = st.text_input("neurons_target", value = 0.01)
-  p_learning_rate_target = st.text_input("learning_rate_target", value = 50)
+  p_layers_target = st.text_input("layers_target", value = 2)
+  p_neurons_target = st.text_input("neurons_target", value = 50)
+  p_learning_rate_target = st.text_input("learning_rate_target", value = 0.01)
   p_epochs_target = st.text_input("epochs_target", value = 10)
   run_perceptron = st.checkbox("Создать модель Неиросеть!")
   if p_layers_target and p_neurons_target and p_learning_rate_target and p_epochs_target and run_perceptron:
     result =  perceptron_classifier(X_train, X_test, y_train, y_test,
-                          layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
-                          epochs_target = 10) 
+                          layers_target = eval(p_layers_target), neurons_target = eval(p_neurons_target), learning_rate_target = eval(p_learning_rate_target),
+                          epochs_target = eval(p_epochs_target)) 
     acc = (result['Perceptron_predict'] == result['Style']).mean()
     st.write(f"Accuracy: {acc:.2%}")
     st.write(result)
