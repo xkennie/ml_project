@@ -344,10 +344,10 @@ st.markdown("---")
     
     # Преобразуем в DataFrame для st.bar_chart
 #hist_df = pd.DataFrame({
-        'bin_left': hist_values[1][:-1],
-        'bin_right': hist_values[1][1:],
-        'count': hist_values[0]
-    })
+        #'bin_left': hist_values[1][:-1],
+        #'bin_right': hist_values[1][1:],
+        #'count': hist_values[0]
+    #})
 #hist_df['bin'] = hist_df.apply(lambda x: f"{x['bin_left']:.2f}-{x['bin_right']:.2f}", axis=1)
     
 # Отображаем барчарт
