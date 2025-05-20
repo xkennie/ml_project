@@ -106,9 +106,7 @@ if uploaded_file is not None:
 def read_data(df):
   return df
 def handle_missing_values(df, option):
-    """
-    Обрабатывает пропущенные значения в датафрейме согласно выбранному варианту
-    """
+
     df_processed = df.copy()
     
     if option == "Дропнуть":
@@ -154,9 +152,9 @@ st.write(f"Количество строк после обработки: {len(d
 """
 #--
 def handle_missing_values(df, option, categorical_method="mode"):
-    """
+"""
     Обрабатывает пропущенные значения в датафрейме согласно выбранному варианту
-    """
+"""
     df_processed = df.copy()
 
     # Для каждого столбца применяем соответствующую обработку
