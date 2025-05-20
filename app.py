@@ -354,7 +354,7 @@ st.bar_chart(hist_df.set_index('bin')['count'])
     
     # 2. Scatter plot с настройками
 st.subheader("Scatter plot")
-col1, col2, col3 = st.columns(3)
+col1, col2, col3, col4 = st.columns(4)
     
 with col1:
   x_axis = st.selectbox(
@@ -375,12 +375,18 @@ with col3:
             options=["None"] + list(df.columns),
             index=0
         )
-    
+with col4:
+  size_col = st.selectbox(
+            "Размер",
+            options=["None"] + list(df.columns),
+            index=0
+        )    
 if color_col == "None":
-  st.scatter_chart(df, x=x_axis, y=y_axis)
-else:
-  st.scatter_chart(df, x=x_axis, y=y_axis, color=color_col)
-
+    st.scatter_chart(df, x=x_axis, y=y_axis)
+elif size_col == "None":
+    st.scatter_chart(df, x=x_axis, y=y_axis, color=color_col)
+elif size_col != "None":
+    st.scatter_chart(df, x=x_axis, y=y_axis, color=color_col, size = size_col)
 
 st.subheader("Подготовка данных для моделирования")
     
