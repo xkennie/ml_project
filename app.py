@@ -313,6 +313,7 @@ with col2:
         )
 
 # Отображение выбранного графика
+plt.style.use('dark_background')
 fig, ax = plt.subplots(figsize=(10, 5))
 
 if chart_type == "Гистограмма":
