@@ -31,24 +31,50 @@ from keras.utils import to_categorical
 st.title("Проект по анализу данных. No-code для создания ансамбля")
 st.write("Команда проекта: некий Вадим, некий Константин, некий Андрей, некая Таня")
 
-st.title("Загрузи файл сюда, друг")
-uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
+#st.title("Загрузи файл сюда, друг")
+#uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
+st.title("Данные для анализа")
+uploaded_file = st.file_uploader("Выберите файл (CSV или Excel)", type=["csv", "xls", "xlsx"])
+
 if uploaded_file is not None:
-  seps = [";", ","]
-  decimals = [".", ","]
-  sep_sign = ";"
-  sep_sign = st.selectbox(
-    "Выберите разделитель",
-    (";", ",", " ", "/"))
-  decimal_sign = ","
-  decimal_sign = st.selectbox(
-    "Выберите отделитель дробной части",
-    (".", ","))
-  df = pd.read_csv(uploaded_file, sep = sep_sign, decimal = decimal_sign)
-  st.write("Твой датасет:")
-  st.dataframe(df.head())
-  backup_df = df.copy()
+    # Определяем тип файла по расширению
+    file_name = uploaded_file.name.lower()
+
+    if file_name.endswith('.csv'):
+        # Настройки для CSV файлов
+        sep_sign = st.selectbox(
+            "Выберите разделитель",
+            (";", ",", " ", "|"), index=0)
+
+        decimal_sign = st.selectbox(
+            "Выберите отделитель дробной части",
+            (".", ","), index=1)
+
+        df = pd.read_csv(uploaded_file, sep=sep_sign, decimal=decimal_sign)
+
+    elif file_name.endswith(('.xls', '.xlsx')):
+        df = pd.read_excel(uploaded_file)
+
+    st.write("Загруженный набор данных:")
+    st.dataframe(df.head())
+    backup_df = df.copy()
  
+#if uploaded_file is not None:
+  #seps = [";", ","]
+  #decimals = [".", ","]
+  #sep_sign = ";"
+  #sep_sign = st.selectbox(
+   # "Выберите разделитель",
+   # (";", ",", " ", "/"))
+  #decimal_sign = ","
+  #decimal_sign = st.selectbox(
+    #"Выберите отделитель дробной части",
+    #(".", ","))
+  #df = pd.read_csv(uploaded_file, sep = sep_sign, decimal = decimal_sign)
+  #st.write("Твой датасет:")
+  #st.dataframe(df.head())
+  #backup_df = df.copy()
+### 
 #чтение данных
 def read_data(df):
   return df
