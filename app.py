@@ -101,55 +101,6 @@ if uploaded_file is not None:
   #st.write("Твой датасет:")
   #st.dataframe(df.head())
   #backup_df = df.copy()
-"""
-#чтение данных
-def read_data(df):
-  return df
-def handle_missing_values(df, option):
-
-    df_processed = df.copy()
-    
-    if option == "Дропнуть":
-        df_processed = df_processed.dropna()
-    elif option == "Заменить на ноль":
-        for col in df_processed.columns:
-            if pd.api.types.is_numeric_dtype(df_processed[col]):
-                df_processed[col] = df_processed[col].fillna(0)
-            else:
-                df_processed[col] = df_processed[col].fillna("0")
-    elif option == "Заменить на медиану":
-        for col in df_processed.columns:
-            if pd.api.types.is_numeric_dtype(df_processed[col]):
-                median_val = df_processed[col].median()
-                df_processed[col] = df_processed[col].fillna(median_val)
-            else:
-                df_processed[col] = df_processed[col].fillna("0")
-    
-    return df_processed
-# Основной код Streamlit
-st.title("Обработка пропущенных значений в датафрейме")
-
-# Предполагаем, что датафрейм уже загружен в переменную df
-if 'df' not in globals():
-    st.warning("Датафрейм не найден в памяти. Загрузите данные.")
-    st.stop()
-
-# Выпадающий список для выбора метода обработки пропусков
-missing_values_option = st.selectbox(
-    "Что делать с пропусками?",
-    options=["Заменить на ноль", "Дропнуть", "Заменить на медиану"],
-    index=0  # По умолчанию выбран "Заменить на ноль"
-)
-
-# Обработка датафрейма
-df = handle_missing_values(df, missing_values_option)
-
-# Вывод информации о результате
-st.subheader("Результат обработки")
-st.write(f"Выбранный метод: {missing_values_option}")
-st.write(f"Исходное количество строк: {len(backup_df)}")
-st.write(f"Количество строк после обработки: {len(df)}")
-"""
 
 def handle_missing_values(df, option, categorical_method="mode"):
     df_processed = df.copy()
