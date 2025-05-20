@@ -516,11 +516,146 @@ random_state = st.number_input(
 #  st.write(f"Выбрано признаков: {len(selected_features)}")
 #  st.write(f"Размер обучающей выборки: {X_train.shape[0]}")
 #  st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
-def preprocess(X_train, X_test, y_train, y_test):
-  return X_train, X_test, y_train, y_test
-    
-#функции с реализациями методов ML
-X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
+def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, dummy_cols,
+                   balance_method, test_size, random_state):
+# Улучшенная функция предобработки
+def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, dummy_cols,
+                   balance_method, test_size, random_state):
+    """
+    Полная обработка данных с разбиением на train/test
+    Возвращает: X_train, X_test, y_train, y_test, train_ids, test_ids
+    """
+
+    # Выделяем признаки и таргет
+    X = data[features]
+    y = data[target_col]
+    ids = data[id_cols] if id_cols else None
+
+    # Разбиваем на train/test
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y,
+        test_size=test_size/100,
+        random_state=random_state,
+        stratify=y if not pd.api.types.is_numeric_dtype(y) else None
+    )
+
+    # Сохраняем ID для train и test
+    if ids is not None:
+        train_ids = ids.loc[X_train.index]
+        test_ids = ids.loc[X_test.index]
+    else:
+        train_ids, test_ids = None, None
+
+    # 1. Логарифмирование
+    for col in log_cols:
+        X_train[col] = np.log1p(X_train[col])
+        X_test[col] = np.log1p(X_test[col])
+
+    # 2. One-hot кодирование
+    if dummy_cols:
+        encoder = OneHotEncoder(drop='first', sparse=False)
+        train_encoded = encoder.fit_transform(X_train[dummy_cols])
+        test_encoded = encoder.transform(X_test[dummy_cols])
+
+        encoded_cols = encoder.get_feature_names_out(dummy_cols)
+        train_encoded_df = pd.DataFrame(train_encoded, columns=encoded_cols, index=X_train.index)
+        test_encoded_df = pd.DataFrame(test_encoded, columns=encoded_cols, index=X_test.index)
+
+        X_train = X_train.drop(dummy_cols, axis=1).join(train_encoded_df)
+        X_test = X_test.drop(dummy_cols, axis=1).join(test_encoded_df)
+
+    # 3. Нормализация
+    if norm_cols:
+        scaler = StandardScaler()
+        X_train[norm_cols] = scaler.fit_transform(X_train[norm_cols])
+        X_test[norm_cols] = scaler.transform(X_test[norm_cols])
+
+    # 4. Балансировка классов
+    if balance_method != "Нет" and not pd.api.types.is_numeric_dtype(y_train):
+        if balance_method == "Random Oversampling":
+            sampler = RandomOverSampler(random_state=random_state)
+        elif balance_method == "SMOTE":
+            sampler = SMOTE(random_state=random_state)
+        elif balance_method == "Random Undersampling":
+            sampler = RandomUnderSampler(random_state=random_state)
+
+        X_train, y_train = sampler.fit_resample(X_train, y_train)
+
+    return X_train, X_test, y_train, y_test, train_ids, test_ids
+
+# Кнопка для запуска обработки
+if st.button("Подготовить данные", type="primary"):
+    with st.spinner("Обработка данных..."):
+        # Полная обработка данных с разбиением
+        X_train, X_test, y_train, y_test, train_ids, test_ids = preprocess_data(
+            data=df,
+            target_col=target_col,
+            id_cols=id_cols,
+            features=selected_features,
+            norm_cols=norm_cols,
+            log_cols=log_cols,
+            dummy_cols=dummy_cols,
+            balance_method=balance_method,
+            test_size=test_size,
+            random_state=random_state
+        )
+
+        # Сохраняем в session_state
+        st.session_state.update({
+            'X_train': X_train,
+            'X_test': X_test,
+            'y_train': y_train,
+            'y_test': y_test,
+            'train_ids': train_ids,
+            'test_ids': test_ids
+        })
+
+        st.success("Данные успешно подготовлены!")
+
+        # Вывод результатов
+        st.markdown("---")
+        st.subheader("Результаты предобработки")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Обучающая выборка", f"{len(X_train)} наблюдений")
+            st.metric("Признаков после обработки", X_train.shape[1])
+            if hasattr(y_train, 'value_counts'):
+                st.write("Распределение классов (train):")
+                st.dataframe(y_train.value_counts(normalize=True))
+
+        with col2:
+            st.metric("Тестовая выборка", f"{len(X_test)} наблюдений")
+            st.metric("Размер теста", f"{test_size}%")
+            if hasattr(y_test, 'value_counts'):
+                st.write("Распределение классов (test):")
+                st.dataframe(y_test.value_counts(normalize=True))
+
+        # Пример данных
+        st.markdown("---")
+        st.subheader("Пример данных")
+
+        tab1, tab2 = st.tabs(["Обучающая выборка", "Тестовая выборка"])
+        with tab1:
+            display_df = X_train.head(5).copy()
+            display_df[target_col] = y_train.head(5).values
+            if train_ids is not None:
+                display_df = pd.concat([train_ids.head(5), display_df], axis=1)
+            st.dataframe(display_df)
+
+        with tab2:
+            display_df = X_test.head(5).copy()
+            display_df[target_col] = y_test.head(5).values
+            if test_ids is not None:
+                display_df = pd.concat([test_ids.head(5), display_df], axis=1)
+            st.dataframe(display_df)
+
+# Для использования в ML моделях
+if 'X_train' in st.session_state:
+    X_train = st.session_state.X_train
+    X_test = st.session_state.X_test
+    y_train = st.session_state.y_train
+    y_test = st.session_state.y_test
   
 #logreg
 def logistic_regression(X_train, X_test, y_train, y_test):
