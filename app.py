@@ -101,7 +101,7 @@ if uploaded_file is not None:
   #st.write("Твой датасет:")
   #st.dataframe(df.head())
   #backup_df = df.copy()
- """
+"""
 #чтение данных
 def read_data(df):
   return df
