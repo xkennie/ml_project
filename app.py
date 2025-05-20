@@ -150,13 +150,9 @@ st.write(f"Выбранный метод: {missing_values_option}")
 st.write(f"Исходное количество строк: {len(backup_df)}")
 st.write(f"Количество строк после обработки: {len(df)}")
 """
-#--
-def handle_missing_values(df, option, categorical_method="mode"):
-"""
-    Обрабатывает пропущенные значения в датафрейме согласно выбранному варианту
-"""
-    df_processed = df.copy()
 
+def handle_missing_values(df, option, categorical_method="mode"):
+    df_processed = df.copy()
     # Для каждого столбца применяем соответствующую обработку
     for col in df_processed.columns:
         # Для числовых данных
