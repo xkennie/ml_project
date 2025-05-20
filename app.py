@@ -28,8 +28,35 @@ from tensorflow.keras.optimizers import Adam
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
-st.title("Проект по анализу данных. No-code для создания ансамбля")
-st.write("Команда проекта: некий Вадим, некий Константин, некий Андрей, некая Таня")
+st.set_page_config(page_title="HSE | ТИИПА", layout="wide")
+
+st.title("© HSE | ТИИПА")
+st.markdown("**Fast-touch classification-analytical tool**")
+
+st.markdown("---")
+
+# Информация о команде
+with st.expander("ℹО команде разработчиков"):
+    st.markdown("""
+    **Команда проекта:**
+    - Константин Ильященко — Team Leader
+    - Вадим Казаков — Master of Machine Learning
+    - Андрей Ширшов — Business Developer
+    - Татьяна Черных — Designer
+    """)
+
+# Инструкция по использованию
+with st.expander("Инструкция по использованию сервиса", expanded=True):
+    st.markdown("""
+    1. *Выберите нужную тему* анализа
+    2. *Подготовьте данные* с переменной для предсказания и переменными для анализа
+    3. *Загрузите данные* и выберите подходящие переменные
+    4. *Запустите анализ* — выберите модели машинного обучения и доверьтесь нам. *Дайте алгоритму время для обработки.*
+    5. *Изучите результаты* — метрики предсказания и визуализации.
+    6. *Выберите* лучшую модель и *примените* её на совершенно новых данных.
+    """)
+
+st.markdown("---")
 
 #st.title("Загрузи файл сюда, друг")
 #uploaded_file = st.file_uploader("Select a CSV file", type=["csv"])
