@@ -102,31 +102,31 @@ if uploaded_file is not None:
   #st.dataframe(df.head())
   #backup_df = df.copy()
 
-"""
-#чтение данных
-def read_data(df):
-  return df
-def handle_missing_values(df, option):
 
-    df_processed = df.copy()
+#чтение данных
+#def read_data(df):
+  #return df
+#def handle_missing_values(df, option):
+
+    #df_processed = df.copy()
     
-    if option == "Дропнуть":
-        df_processed = df_processed.dropna()
-    elif option == "Заменить на ноль":
-        for col in df_processed.columns:
-            if pd.api.types.is_numeric_dtype(df_processed[col]):
-                df_processed[col] = df_processed[col].fillna(0)
-            else:
-                df_processed[col] = df_processed[col].fillna("0")
-    elif option == "Заменить на медиану":
-        for col in df_processed.columns:
-            if pd.api.types.is_numeric_dtype(df_processed[col]):
-                median_val = df_processed[col].median()
-                df_processed[col] = df_processed[col].fillna(median_val)
-            else:
-                df_processed[col] = df_processed[col].fillna("0")
+    #if option == "Дропнуть":
+        #df_processed = df_processed.dropna()
+    #elif option == "Заменить на ноль":
+        #for col in df_processed.columns:
+            #if pd.api.types.is_numeric_dtype(df_processed[col]):
+                #df_processed[col] = df_processed[col].fillna(0)
+            #else:
+                #df_processed[col] = df_processed[col].fillna("0")
+    #elif option == "Заменить на медиану":
+        #for col in df_processed.columns:
+            #if pd.api.types.is_numeric_dtype(df_processed[col]):
+                #median_val = df_processed[col].median()
+                #df_processed[col] = df_processed[col].fillna(median_val)
+            #else:
+                #df_processed[col] = df_processed[col].fillna("0")
     
-    return df_processed
+    #return df_processed
 # Основной код Streamlit
 st.title("Обработка пропущенных значений в датафрейме")
 
