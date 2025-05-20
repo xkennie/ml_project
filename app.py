@@ -255,7 +255,83 @@ st.title("Анализ данных")
 st.write(df.describe())
 
 st.header("Детальный анализ")
-    
+
+# Анализ данных
+st.title("Визуальный анализ данных")
+st.markdown("---")
+
+with st.expander("Основные статистические показатели данных", expanded=True):
+    st.subheader("Описательная статистика")
+
+    # Улучшенное отображение describe()
+    desc = df.describe().T
+    desc['missing'] = df.isna().sum()
+    desc['missing_percent'] = (desc['missing'] / len(df)).round(2)
+    desc['dtype'] = df.dtypes
+    desc['unique'] = df.nunique()
+
+    # Форматируем вывод
+    st.dataframe(
+        desc.style.format({
+            'mean': '{:.2f}',
+            'std': '{:.2f}',
+            'min': '{:.2f}',
+            '25%': '{:.2f}',
+            '50%': '{:.2f}',
+            '75%': '{:.2f}',
+            'max': '{:.2f}',
+            'missing_percent': '{:.0%}'
+        }).highlight_max(color='lightgreen').highlight_min(color='#ffcccb'),
+        use_container_width=True
+    )
+
+st.markdown("---")
+st.header("Анализ распределения")
+
+# Выбор типа графика
+chart_type = st.radio(
+    "Тип визуализации распределения:",
+    ["Гистограмма", "Ящик с усами (Boxplot)", "Плотность распределения"],
+    horizontal=True
+)
+
+col1, col2 = st.columns([3, 1])
+with col1:
+    selected_col = st.selectbox(
+        "Выберите переменную для анализа:",
+        options=df.select_dtypes(include=['number']).columns,
+        index=0
+    )
+
+with col2:
+    if chart_type == "Гистограмма":
+        bins = st.slider(
+            "Количество интервалов:",
+            min_value=5,
+            max_value=50,
+            value=int(np.sqrt(len(df)) if len(df) > 0 else 20
+        )
+
+# Отображение выбранного графика
+fig, ax = plt.subplots(figsize=(10, 5))
+
+if chart_type == "Гистограмма":
+    sns.histplot(df[selected_col], bins=bins, kde=True, ax=ax)
+    ax.set_title(f'Распределение {selected_col}')
+    ax.set_xlabel(selected_col)
+    ax.set_ylabel('Частота')
+elif chart_type == "Ящик с усами (Boxplot)":
+    sns.boxplot(x=df[selected_col], ax=ax)
+    ax.set_title(f'Boxplot для {selected_col}')
+elif chart_type == "Плотность распределения":
+    sns.kdeplot(df[selected_col], ax=ax, fill=True)
+    ax.set_title(f'Плотность распределения {selected_col}')
+    ax.set_xlabel(selected_col)
+    ax.set_ylabel('Плотность')
+
+st.pyplot(fig)
+
+st.markdown("---")
     # 1. Гистограмма для выбранной колонки
 st.subheader("Гистограмма")
 selected_col = st.selectbox(
