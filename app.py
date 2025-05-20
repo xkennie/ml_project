@@ -128,6 +128,36 @@ if uploaded_file is not None:
     
     #return df_processed
 # Основной код Streamlit
+def handle_missing_values(df, option, categorical_method="mode"):
+    df_processed = df.copy()
+
+    # Для каждого столбца применяем соответствующую обработку
+    for col in df_processed.columns:
+        # Для числовых данных
+        if pd.api.types.is_numeric_dtype(df_processed[col]):
+            if option == "Удалить строки с пропусками":
+                df_processed = df_processed.dropna(subset=[col])
+            elif option == "Заменить на ноль":
+                df_processed[col] = df_processed[col].fillna(0)
+            elif option == "Заменить на медиану":
+                df_processed[col] = df_processed[col].fillna(df_processed[col].median())
+            elif option == "Заменить на среднее":
+                df_processed[col] = df_processed[col].fillna(df_processed[col].mean())
+            elif option == "Интерполяция":
+                df_processed[col] = df_processed[col].interpolate()
+
+        # Для категориальных данных
+        else:
+            if option == "Удалить строки с пропусками":
+                df_processed = df_processed.dropna(subset=[col])
+            elif option == "Заменить на моду":
+                df_processed[col] = df_processed[col].fillna(df_processed[col].mode()[0])
+            elif option == "Создать новую категорию 'Unknown'":
+                df_processed[col] = df_processed[col].fillna("Unknown")
+            elif option == "Экстраполяция (последнее значение)":
+                df_processed[col] = df_processed[col].fillna(method='fill')
+
+    return df_processed
 st.title("Обработка пропущенных значений в датафрейме")
 
 # Предполагаем, что датафрейм уже загружен в переменную df
