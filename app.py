@@ -518,13 +518,6 @@ random_state = st.number_input(
 #  st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
 def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, dummy_cols,
                    balance_method, test_size, random_state):
-# Улучшенная функция предобработки
-def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, dummy_cols,
-                   balance_method, test_size, random_state):
-    """
-    Полная обработка данных с разбиением на train/test
-    Возвращает: X_train, X_test, y_train, y_test, train_ids, test_ids
-    """
 
     # Выделяем признаки и таргет
     X = data[features]
