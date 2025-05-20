@@ -281,7 +281,7 @@ with st.expander("Основные статистические показате
             '75%': '{:.2f}',
             'max': '{:.2f}',
             'missing_percent': '{:.0%}'
-        }).highlight_max(color='lightgreen').highlight_min(color='#ffcccb'),
+        }),
         use_container_width=True
     )
 
