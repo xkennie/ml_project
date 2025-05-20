@@ -328,7 +328,7 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
 
   perceptron_predicts = pd.concat([y_true, predict], axis = 1)
   perceptron_predicts.columns = ['Style', 'Perceptron_predict']
-  perceptron_predicts["index"] = [i for i in range(perceptron_predicts.shape[0)]
+  perceptron_predicts["index"] = [i for i in range(perceptron_predicts.shape[0])]
   perceptron_predicts = perceptron_predicts[["index", "Style", "Perceptron_predict"]]                        
   return perceptron_predicts
 # ======== Models row ============
