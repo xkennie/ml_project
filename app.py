@@ -334,24 +334,24 @@ st.pyplot(fig)
 
 st.markdown("---")
     # 1. Гистограмма для выбранной колонки
-st.subheader("Гистограмма")
-selected_col = st.selectbox(
-        "Выберите колонку для гистограммы",
-        options=df.columns,
-        index=2
-    )
-hist_values = np.histogram(df[selected_col], bins=int(round( len(df[selected_col])**0.5 ,0)))
+#st.subheader("Гистограмма")
+#selected_col = st.selectbox(
+#        "Выберите колонку для гистограммы",
+#        options=df.columns,
+#        index=2
+#    )
+#hist_values = np.histogram(df[selected_col], bins=int(round( len(df[selected_col])**0.5 ,0)))
     
     # Преобразуем в DataFrame для st.bar_chart
-hist_df = pd.DataFrame({
+#hist_df = pd.DataFrame({
         'bin_left': hist_values[1][:-1],
         'bin_right': hist_values[1][1:],
         'count': hist_values[0]
     })
-hist_df['bin'] = hist_df.apply(lambda x: f"{x['bin_left']:.2f}-{x['bin_right']:.2f}", axis=1)
+#hist_df['bin'] = hist_df.apply(lambda x: f"{x['bin_left']:.2f}-{x['bin_right']:.2f}", axis=1)
     
 # Отображаем барчарт
-st.bar_chart(hist_df.set_index('bin')['count'])
+#st.bar_chart(hist_df.set_index('bin')['count'])
     
     # 2. Scatter plot с настройками
 st.subheader("Scatter plot")
