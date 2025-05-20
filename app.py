@@ -309,7 +309,7 @@ with col2:
             "Количество интервалов:",
             min_value=5,
             max_value=50,
-            value=int(np.sqrt(len(df)) if len(df) > 0 else 20
+            value=int(np.sqrt(len(df)) if len(df) > 0 else 20)
         )
 
 # Отображение выбранного графика
