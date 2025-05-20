@@ -381,12 +381,14 @@ with col4:
             options=["None"] + list(df.columns),
             index=0
         )    
-if color_col == "None":
+if (color_col == "None") & (size_col == "None"):
     st.scatter_chart(df, x=x_axis, y=y_axis)
-elif size_col == "None":
+elif (size_col == "None") & (color_col != "None"):
     st.scatter_chart(df, x=x_axis, y=y_axis, color=color_col)
-elif size_col != "None":
-    st.scatter_chart(df, x=x_axis, y=y_axis, color=color_col, size = size_col)
+elif (size_col != "None") & (color_col == "None"):
+    st.scatter_chart(df, x=x_axis, y=y_axis, size = size_col)
+elif (size_col != "None") & (color_col != "None"):
+    st.scatter_chart(df, x=x_axis, y=y_axis, color = color_col, size = size_col)
 
 st.subheader("Подготовка данных для моделирования")
     
