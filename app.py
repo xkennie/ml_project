@@ -391,48 +391,131 @@ elif (size_col != "None") & (color_col == "None"):
 elif (size_col != "None") & (color_col != "None"):
     st.scatter_chart(df, x=x_axis, y=y_axis, color = color_col, size = size_col)
 
+#st.subheader("Подготовка данных для моделирования")
+#    
+#    # 1. Выбор таргетной переменной (y)
+#target_col = st.selectbox(
+#        "Выберите таргетную переменную (y)",
+#        options=df.columns,
+#        index=0,  # Дефолтное значение - первая колонка
+#        key="target_select"
+#    )
+    
+#    # 2. Выбор признаков (X) - исключаем таргет из возможных признаков
+#available_features = [col for col in df.columns if col != target_col]
+    
+#selected_features = st.multiselect(
+#        "Выберите признаки для модели (X)",
+#        options=available_features,
+#        default=available_features,  # По умолчанию выбираем все доступные признаки
+#        key="features_select"
+#    )
+#    
+#    # Проверка, что выбраны хотя бы один признак
+#if not selected_features:
+#  st.error("Пожалуйста, выберите хотя бы один признак для модели")
+#      
+#if selected_features:    
+#    # Формируем X и y
+#  y = df[target_col]
+#  X = df[selected_features]
+#    
+#    # 3. Разбиение на train/test
+#  X_train, X_test, y_train, y_test = train_test_split(
+#        X, y, 
+#        test_size=0.2, 
+#        random_state=42
+#    )
+# Подготовка данных к предсказанию
 st.subheader("Подготовка данных для моделирования")
-    
-    # 1. Выбор таргетной переменной (y)
+st.markdown("---")
+
+# 1. Выбор таргетной переменной (y)
 target_col = st.selectbox(
-        "Выберите таргетную переменную (y)",
-        options=df.columns,
-        index=0,  # Дефолтное значение - первая колонка
-        key="target_select"
-    )
-    
-    # 2. Выбор признаков (X) - исключаем таргет из возможных признаков
-available_features = [col for col in df.columns if col != target_col]
-    
+    "Выберите таргетную переменную (y)",
+    options=df.columns,
+    index=0,
+    key="target_select"
+)
+
+# 2. Выбор ID переменных (для идентификации наблюдений)
+id_cols = st.multiselect(
+    "Выберите переменные-идентификаторы (не будут использоваться в модели)",
+    options=[col for col in df.columns if col != target_col],
+    key="id_cols"
+)
+
+# 3. Выбор признаков (X)
+available_features = [col for col in df.columns if col != target_col and col not in id_cols]
+
 selected_features = st.multiselect(
-        "Выберите признаки для модели (X)",
-        options=available_features,
-        default=available_features,  # По умолчанию выбираем все доступные признаки
-        key="features_select"
-    )
-    
-    # Проверка, что выбраны хотя бы один признак
+    "Выберите признаки для модели (X)",
+    options=available_features,
+    default=available_features,
+    key="features_select"
+)
+
 if not selected_features:
-  st.error("Пожалуйста, выберите хотя бы один признак для модели")
-      
-if selected_features:    
-    # Формируем X и y
-  y = df[target_col]
-  X = df[selected_features]
-    
-    # 3. Разбиение на train/test
-  X_train, X_test, y_train, y_test = train_test_split(
-        X, y, 
-        test_size=0.2, 
-        random_state=42
+    st.error("Пожалуйста, выберите хотя бы один признак для модели")
+    st.stop()
+
+# 4. Настройки предобработки данных
+with st.expander("Настройки предобработки данных", expanded=True):
+    st.subheader("Нормализация данных")
+    numeric_cols = [col for col in selected_features if pd.api.types.is_numeric_dtype(df[col])]
+    norm_cols = st.multiselect(
+        "Выберите признаки для нормализации (StandardScaler)",
+        options=numeric_cols,
+        help="Применяет стандартную нормализацию (z-score)"
     )
+
+    st.subheader("Логарифмическое преобразование")
+    log_cols = st.multiselect(
+        "Выберите признаки для логарифмирования",
+        options=numeric_cols,
+        help="Применяет log(x+1) преобразование для правосторонне-скошенных данных"
+    )
+
+    st.subheader("Обработка категориальных данных")
+    categorical_cols = [col for col in selected_features if not pd.api.types.is_numeric_dtype(df[col])]
+    dummy_cols = st.multiselect(
+        "Выберите категориальные признаки для one-hot кодирования",
+        options=categorical_cols,
+        help="Создаст dummy-переменные (n-1) для выбранных категориальных признаков"
+    )
+
+    st.subheader("Балансировка классов")
+    if pd.api.types.is_numeric_dtype(df[target_col]):
+        st.warning("Балансировка классов доступна только для категориального таргета")
+    else:
+        balance_method = st.selectbox(
+            "Метод балансировки классов",
+            options=["Нет", "Random Oversampling", "SMOTE", "Random Undersampling"],
+            index=0,
+            help="Выберите метод для балансировки классов в обучающей выборке"
+        )
+
+# 5. Параметры разбиения
+test_size = st.slider(
+    "Размер тестовой выборки (%)",
+    min_value=5,
+    max_value=40,
+    value=20,
+    step=5
+)
+
+random_state = st.number_input(
+    "Random state для воспроизводимости",
+    min_value=0,
+    value=42
+)
     
     # Выводим информацию о разбиении
-  st.success("Данные успешно подготовлены!")
-  st.write(f"Выбран таргет: {target_col}")
-  st.write(f"Выбрано признаков: {len(selected_features)}")
-  st.write(f"Размер обучающей выборки: {X_train.shape[0]}")
-  st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
+#  st.success("Данные успешно подготовлены!")
+#  st.write(f"Выбран таргет: {target_col}")
+#  st.write(f"Выбрано признаков: {len(selected_features)}")
+#  st.write(f"Размер обучающей выборки: {X_train.shape[0]}")
+#  st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
 def preprocess(X_train, X_test, y_train, y_test):
   return X_train, X_test, y_train, y_test
     
