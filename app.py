@@ -594,14 +594,14 @@ if st.button("Подготовить данные", type="primary"):
         )
 
         # Сохраняем в session_state
-        st.session_state.update({
-            'X_train': X_train,
-            'X_test': X_test,
-            'y_train': y_train,
-            'y_test': y_test,
-            'train_ids': train_ids,
-            'test_ids': test_ids
-        })
+        #st.session_state.update({
+            #'X_train': X_train,
+            #'X_test': X_test,
+            #'y_train': y_train,
+            #'y_test': y_test,
+            #'train_ids': train_ids,
+            #'test_ids': test_ids
+        #})
 
         st.success("Данные успешно подготовлены!")
 
@@ -644,11 +644,16 @@ if st.button("Подготовить данные", type="primary"):
             st.dataframe(display_df)
 
 # Для использования в ML моделях
-if 'X_train' in st.session_state:
-    X_train = st.session_state.X_train
-    X_test = st.session_state.X_test
-    y_train = st.session_state.y_train
-    y_test = st.session_state.y_test
+#if 'X_train' in st.session_state:
+    #X_train = st.session_state.X_train
+    #X_test = st.session_state.X_test
+    #y_train = st.session_state.y_train
+    #y_test = st.session_state.y_test
+if X_train:
+    X_train = X_train
+    X_test = X_test
+    y_train = y_train
+    y_test = y_test
   
 #logreg
 def logistic_regression(X_train, X_test, y_train, y_test):
