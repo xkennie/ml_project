@@ -1056,7 +1056,7 @@ with col7:
     model, metrics_df, y_train_pred, y_test_pred =  perceptron_classifier(X_train, X_test, y_train, y_test,
                           layers_target = eval(p_layers_target), neurons_target = eval(p_neurons_target), learning_rate_target = eval(p_learning_rate_target),
                           epochs_target = eval(p_epochs_target))
-    model = perceptron_model
+    perceptron_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
