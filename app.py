@@ -660,7 +660,7 @@ else:
   
 #logreg
 def logistic_regression(X_train, X_test, y_train, y_test):
-  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
+  X_train, X_test, y_train, y_test = X_train, X_test, y_train, y_test #preprocess(X_train, X_test, y_train, y_test)
   logreg = LogisticRegression(
     multi_class='multinomial',
     max_iter = 1000
