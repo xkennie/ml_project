@@ -844,42 +844,105 @@ def knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = 10, use_
   return evaluate_model(knn, X_train, X_test, y_train, y_test, "KNN", use_cv=use_cv, cv_folds=cv_folds)
 
 def perceptron_classifier(X_train, X_test, y_train, y_test,
-                          layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
-                          epochs_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
-  #y_train encode
-  label_encoder = LabelEncoder()
-  y_encoded = label_encoder.fit_transform(y_train)
-  y_train = to_categorical(y_encoded)  
-  #y_test encode
-  y_encoded = label_encoder.fit_transform(y_test)
-  y_test = to_categorical(y_encoded)
+                        layers_target=2, neurons_target=50,
+                        learning_rate_target=0.01, epochs_target=10, use_cv=False, cv_folds=5):
+    le = LabelEncoder()
+    y_train_encoded = le.fit_transform(y_train)
+    y_test_encoded = le.transform(y_test)
 
-  perceptron = Sequential()
-  for n in range(layers_target):
-    perceptron.add(Dense(neurons_target, input_dim = X_train.shape[1], activation = 'relu'))  # Скрытые слои
-  
-  perceptron.add(Dense(y_train.shape[1], activation = 'softmax'))  # Выходной слой
+    y_train_onehot = to_categorical(y_train_encoded)
+    y_test_onehot = to_categorical(y_test_encoded)
 
+    model = Sequential()
+    model.add(Dense(neurons_target, input_dim=X_train.shape[1], activation='relu'))
 
-  perceptron.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate = learning_rate_target), metrics=['accuracy'])
+    for _ in range(layers_target ):
+        model.add(Dense(neurons_target, activation='relu'))
 
-  perceptron.fit(X_train, y_train, epochs= epochs_target, batch_size=10, validation_data=(X_test, y_test))
+    model.add(Dense(y_train_onehot.shape[1], activation='softmax'))
 
-  predictions = perceptron.predict(X_test)
-  predicted_classes = np.argmax(predictions, axis=1)
-  predicted_styles = label_encoder.inverse_transform(predicted_classes)
-  predict = pd.Series(predicted_styles)
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer=Adam(learning_rate=learning_rate_target),
+        metrics=['accuracy']
+    )
 
-  true_class = np.argmax(y_test, axis = 1)
-  true_styles = label_encoder.inverse_transform(true_class)
-  y_true = pd.Series(true_styles)
+    history = model.fit(
+        X_train, y_train_onehot,
+        epochs=epochs_target,
+        batch_size=32,
+        validation_data=(X_test, y_test_onehot),
+        verbose=0
+    )
 
-  perceptron_predicts = pd.concat([y_true, predict], axis = 1)
-  perceptron_predicts.columns = ['Style', 'Perceptron_predict']
-  perceptron_predicts["index"] = [i for i in range(perceptron_predicts.shape[0])]
-  perceptron_predicts = perceptron_predicts[["index", "Style", "Perceptron_predict"]]                        
-  return perceptron_predicts
+    # Предсказания
+    y_train_pred = model.predict(X_train, verbose=0)
+    y_test_pred = model.predict(X_test, verbose=0)
+
+    # Преобразование предсказаний обратно в классы
+    y_train_pred_classes = le.inverse_transform(np.argmax(y_train_pred, axis=1))
+    y_test_pred_classes = le.inverse_transform(np.argmax(y_test_pred, axis=1))
+
+    # Расчет метрик
+    metrics = {
+        'Accuracy': [
+            accuracy_score(y_train, y_train_pred_classes),
+            accuracy_score(y_test, y_test_pred_classes)
+        ],
+        'Precision': [
+            precision_score(y_train, y_train_pred_classes, average='weighted'),
+            precision_score(y_test, y_test_pred_classes, average='weighted')
+        ],
+        'Recall': [
+            recall_score(y_train, y_train_pred_classes, average='weighted'),
+            recall_score(y_test, y_test_pred_classes, average='weighted')
+        ],
+        'F1': [
+            f1_score(y_train, y_train_pred_classes, average='weighted'),
+            f1_score(y_test, y_test_pred_classes, average='weighted')
+        ]
+    }
+
+    metrics_df = pd.DataFrame(metrics, index=['Train', 'Test'])
+
+    # Визуализация
+    st.subheader("Матрицы ошибок для Perceptron")
+    col1, col2 = st.columns(2)
+    with col1:
+        plot_confusion_matrix(y_train, y_train_pred_classes, 'Train\nPerceptron')
+    with col2:
+        plot_confusion_matrix(y_test, y_test_pred_classes, 'Test\nPerceptron')
+
+    # График обучения
+    st.subheader("График обучения")
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+    ax1.plot(history.history['accuracy'], label='Train Accuracy')
+    ax1.plot(history.history['val_accuracy'], label='Validation Accuracy')
+    ax1.set_title('Accuracy')
+    ax1.legend()
+
+    ax2.plot(history.history['loss'], label='Train Loss')
+    ax2.plot(history.history['val_loss'], label='Validation Loss')
+    ax2.set_title('Loss')
+    ax2.legend()
+
+    st.pyplot(fig)
+
+    # Создание DataFrame с результатами
+    train_results = pd.DataFrame({
+        'index': X_train.index,
+        'Actual': y_train,
+        'Predicted': y_train_pred_classes
+    })
+
+    test_results = pd.DataFrame({
+        'index': X_test.index,
+        'Actual': y_test,
+        'Predicted': y_test_pred_classes
+    })
+
+    return model, metrics_df, y_train_pred, y_test_pred
 # ======== Models row ============
 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 with col1:
@@ -932,8 +995,23 @@ with col3:
     st.subheader("Test predictions")
     st.dataframe(pd.Series(y_test_pred).head())
 
-
 with col4:
+  st.subheader("KNN")
+  knn_neighbors = st.text_input("knn_neighbors_target", value = 10)
+  run_knn = st.checkbox("Создать модель KNN!")
+  if knn_neighbors and run_knn:
+    model, metrics_df, y_train_pred, y_test_pred = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
+    st.session_state.knn_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+with col5:
   st.subheader("XGBoost")
   xgb_learning_rate = st.text_input("xgb_learning_rate", value = 0.01)
   xgb_estimators = st.text_input("XGB_min_samples", value = 50)
@@ -951,7 +1029,7 @@ with col4:
     st.subheader("Test predictions")
     st.dataframe(pd.Series(y_test_pred).head())
 
-with col5:
+with col6:
   st.subheader("SVC")
   run_svc = st.checkbox("Создать модель SVC!")
   if run_svc:
@@ -966,33 +1044,18 @@ with col5:
     st.subheader("Test predictions")
     st.dataframe(pd.Series(y_test_pred).head())
 
-with col6:
-  st.subheader("KNN")
-  knn_neighbors = st.text_input("knn_neighbors_target", value = 10)
-  run_knn = st.checkbox("Создать модель KNN!")
-  if knn_neighbors and run_knn:
-    model, metrics_df, y_train_pred, y_test_pred = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
-    st.session_state.knn_model = model
-    st.subheader("Metrics")
-    st.dataframe(metrics_df)
-
-    st.subheader("Train predictions")
-    st.dataframe(pd.Series(y_train_pred).head())
-
-    st.subheader("Test predictions")
-    st.dataframe(pd.Series(y_test_pred).head())
 
 with col7:
   st.subheader("Perceptron")
-  p_layers_target = st.text_input("layers_target", value = 10)
-  p_neurons_target = st.text_input("neurons_target", value = 0.01)
-  p_learning_rate_target = st.text_input("learning_rate_target", value = 50)
+  p_layers_target = st.text_input("layers_target", value = 2)
+  p_neurons_target = st.text_input("neurons_target", value = 50)
+  p_learning_rate_target = st.text_input("learning_rate_target", value = 0.01)
   p_epochs_target = st.text_input("epochs_target", value = 10)
   run_perceptron = st.checkbox("Создать модель Неиросеть!")
   if p_layers_target and p_neurons_target and p_learning_rate_target and p_epochs_target and run_perceptron:
     model, metrics_df, y_train_pred, y_test_pred =  perceptron_classifier(X_train, X_test, y_train, y_test,
-                          layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
-                          epochs_target = 10)
+                          layers_target = eval(p_layers_target), neurons_target = eval(p_neurons_target), learning_rate_target = eval(p_learning_rate_target),
+                          epochs_target = eval(p_epochs_target))
     st.session_state.knn_model = perceptron_model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
