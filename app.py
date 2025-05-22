@@ -214,7 +214,7 @@ if show_details:
         """)
 
 # Обработка данных
-if st.button("Обработать пропущенные значения", type="primary"):
+if st.checkbox("Обработать пропущенные значения"): #, type="primary"):
     with st.spinner("Обработка данных..."):
         df = handle_missing_values(df, method)
         st.success("Обработка завершена!")
