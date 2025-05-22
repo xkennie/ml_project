@@ -649,7 +649,9 @@ if st.button("Подготовить данные", type="primary"):
     #X_test = st.session_state.X_test
     #y_train = st.session_state.y_train
     #y_test = st.session_state.y_test
-if X_train:
+if not X_train:
+    st.warning("Подготовьте, пожалуйста, данные")
+else:
     X_train = X_train
     X_test = X_test
     y_train = y_train
