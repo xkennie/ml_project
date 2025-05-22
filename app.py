@@ -898,10 +898,10 @@ with col1:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(y_train_pred.head())
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(y_test_pred.head())
+    st.dataframe(pd.Series(y_test_pred).head())
 
 with col2:
   st.subheader("Decision Tree")
@@ -915,10 +915,10 @@ with col2:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(pd.Series(y_train_pred.head()))
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(pd.Series(y_test_pred.head()))
+    st.dataframe(pd.Series(y_test_pred).head())
 
 with col3:
   st.subheader("Random Forest")
@@ -933,10 +933,10 @@ with col3:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(y_train_pred.head())
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(y_test_pred.head())
+    st.dataframe(pd.Series(y_test_pred).head())
 
 
 with col4:
