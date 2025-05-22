@@ -667,9 +667,9 @@ else:
 
 def plot_confusion_matrix(y_true, y_pred, title):
     cm = confusion_matrix(y_true, y_pred)
-    st.write(cm)
+    #st.write(cm)
     fig, ax = plt.subplots(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False, ax=ax)
+    sns.heatmap(cm, annot=True)#, fmt='d', cmap='Blues', cbar=False, ax=ax)
     ax.set_title(title)
     ax.set_xlabel('Predicted')
     ax.set_ylabel('Actual')
