@@ -1130,7 +1130,7 @@ if not built_models:
 
 # Выбор моделей для ансамбля
 selected_models = st.multiselect(
-    "Выберите модели для ансамбля",
+    "Выберите модели для ансамбля (..но не перцептрон)",
     options=list(built_models.keys()),
     default=list(built_models.keys())
 )
@@ -1162,10 +1162,10 @@ if st.checkbox("Построить ансамбль"):
             )
 
         # Сохраняем результаты
-        st.session_state.ensemble_model = model
-        st.session_state.ensemble_metrics = metrics
-        st.session_state.ensemble_train_pred = train_pred
-        st.session_state.ensemble_test_pred = test_pred
+        ensemble_model = model
+        ensemble_metrics = metrics
+        ensemble_train_pred = train_pred
+        ensemble_test_pred = test_pred
 
         # Вывод результатов
         st.success("Ансамбль успешно построен!")
