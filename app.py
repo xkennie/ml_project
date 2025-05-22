@@ -1184,3 +1184,124 @@ if st.checkbox("Построить ансамбль"):
             'Actual': y_test,
             'Predicted': test_pred
         }).head())
+# Реализовать предсказание по построенным моделям с визуализацией и выгрузкой
+st.title("Предсказание на новых данных")
+
+new_file = st.file_uploader("Загрузите новые данные (CSV или Excel)", type=["csv", "xlsx"])
+
+if new_file:
+    # Определяем тип файла
+    if new_file.name.endswith('.csv'):
+        new_data = pd.read_csv(new_file)
+    else:
+        new_data = pd.read_excel(new_file)
+
+    st.success(f"Успешно загружено {len(new_data)} записей")
+    st.dataframe(new_data.head())
+
+    # 2. Предобработка новых данных
+    st.header("Предобработка данных")
+
+    try:
+        # Применяем те же преобразования, что и к исходным данным
+        processed_data = new_data.copy()
+
+        # Сохраняем обработанные данные
+        new_data_processed = handle_missing_values(processed_data, method)
+
+        st.success("Данные успешно предобработаны!")
+        st.dataframe(processed_data.head())
+
+    except Exception as e:
+        st.error(f"Ошибка при предобработке данных: {str(e)}")
+        st.stop()
+
+    X_train, X_test, y_train, y_test, train_ids, test_ids = preprocess_data(
+        data=processed_data.assign(target_col=None),
+        target_col=target_col,
+        id_cols=id_cols,
+        features=selected_features,
+        norm_cols=norm_cols,
+        log_cols=log_cols,
+        dummy_cols=dummy_cols,
+        balance_method=balance_method,
+        test_size=test_size,
+        random_state=random_state
+    )
+    preprocess_data = pd.concat([X_train, X_test]).drop_duplicates(ignore_index=True)
+
+    # 3. Выбор моделей для предсказания
+    st.header("3. Выбор моделей для предсказания")
+
+    available_models = built_models
+
+    if not available_models:
+        st.warning("Нет доступных моделей. Пожалуйста, постройте хотя бы одну модель.")
+        st.stop()
+
+    selected_models = st.multiselect(
+        "Выберите модели для предсказания",
+        options=list(available_models.keys()),
+        default=list(available_models.keys())
+    )
+
+    # 4. Выполнение предсказаний
+    if st.checkbox("Выполнить предсказания"):
+        predictions = pd.DataFrame(index=processed_data.index)
+
+        for model_name in selected_models:
+            model = available_models[model_name]
+
+            try:
+                # Особый случай для XGBoost (нужно кодирование меток)
+                if model_name == 'XGBoost':
+                    if label_encoder not in globals():
+                        st.error("Не найден кодировщик меток для XGBoost")
+                        continue
+
+                    le = st.session_state.label_encoder
+                    pred = model.predict(processed_data)
+                    predictions[model_name] = le.inverse_transform(pred)
+
+                # Особый случай для перцептрона
+                elif model_name == 'Perceptron':
+                    if perceptron_encoder not in globals():
+                        st.error("Не найден кодировщик меток для перцептрона")
+                        continue
+
+                    le = perceptron_encoder
+                    pred_proba = model.predict(processed_data)
+                    pred = np.argmax(pred_proba, axis=1)
+                    predictions[model_name] = le.inverse_transform(pred)
+
+                # Для остальных моделей
+                else:
+                    predictions[model_name] = model.predict(processed_data)
+
+            except Exception as e:
+                st.error(f"Ошибка при предсказании с помощью {model_name}: {str(e)}")
+                continue
+
+        # Добавляем голосование, если выбрано несколько моделей
+        if len(selected_models) > 1:
+            def majority_vote(row):
+                votes = [row[model] for model in selected_models]
+                return Counter(votes).most_common(1)[0][0]
+
+            predictions['Majority_Vote'] = predictions.apply(majority_vote, axis=1)
+
+        # Сохраняем предсказания
+        predictions = predictions
+
+        # Выводим результаты
+        st.header("Результаты предсказаний")
+        st.dataframe(predictions)
+
+        # Кнопка для скачивания результатов
+        csv = predictions.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Скачать предсказания как CSV",
+            data=csv,
+            file_name='predictions.csv',
+            mime='text/csv'
+        )
