@@ -960,10 +960,10 @@ with col4:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(y_train_pred.head())
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(y_test_pred.head())
+    st.dataframe(pd.Series(y_test_pred).head())
 
 with col5:
   st.subheader("SVC")
@@ -975,10 +975,10 @@ with col5:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(y_train_pred.head())
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(y_test_pred.head())
+    st.dataframe(pd.Series(y_test_pred).head())
 
 with col6:
   st.subheader("KNN")
@@ -991,10 +991,10 @@ with col6:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(y_train_pred.head())
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(y_test_pred.head())
+    st.dataframe(pd.Series(y_test_pred).head())
 
 with col7:
   st.subheader("Perceptron")
@@ -1012,10 +1012,10 @@ with col7:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(y_train_pred.head())
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(y_test_pred.head())
+    st.dataframe(pd.Series(y_test_pred).head())
 
 # ======= Доступные функции =======
 available_functions = {
