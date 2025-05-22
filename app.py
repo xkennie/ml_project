@@ -577,7 +577,7 @@ def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, du
     return X_train, X_test, y_train, y_test, train_ids, test_ids
 
 # Кнопка для запуска обработки
-if st.button("Подготовить данные", type="primary"):
+if st.checkbox("Подготовить данные"):
     with st.spinner("Обработка данных..."):
         # Полная обработка данных с разбиением
         X_train, X_test, y_train, y_test, train_ids, test_ids = preprocess_data(
