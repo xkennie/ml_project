@@ -918,7 +918,7 @@ with col2:
   run_tree = st.checkbox("Создать модель дерева!")
   if deps and minsamples and run_tree:
     model, metrics_df, y_train_pred, y_test_pred = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
-    st.session_state.tree_model = model
+    tree_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
@@ -936,7 +936,7 @@ with col3:
   run_rf = st.checkbox("Создать модель Случайного Леса!")
   if rf_estimators and rf_deps and rf_minsamples and run_rf:
     model, metrics_df, y_train_pred, y_test_pred = random_forest(X_train, X_test, y_train, y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
-    st.session_state.rf_model = model
+    rf_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
@@ -954,8 +954,8 @@ with col4:
   xgb_deps = st.text_input("XGB_max_depth", value = 10)
   run_xgb = st.checkbox("Создать модель XGBoost!")
   if run_xgb and xgb_learning_rate and xgb_estimators and xgb_deps:
-    model, metrics_df, y_train_pred, y_test_pred = xgboost(X_train, X_test, y_train, y_test, learning_rate_target = eval(xgb_learning_rate), estimators_target = eval(xgb_estimators), max_depth_target = eval(xgb_deps))
-    st.session_state.xgb_model = model
+    model, metrics_df, y_train_pred, y_test_pred = xgboost(X_train, X_test, y_train, y_test, learning_rate = eval(xgb_learning_rate), n_estimators = eval(xgb_estimators), max_depth = eval(xgb_deps))
+    xgb_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
