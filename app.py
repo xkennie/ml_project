@@ -931,14 +931,14 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
 
     # Создание DataFrame с результатами
     train_results = pd.DataFrame({
-        'index': X_train.index,
-        'Actual': y_train,
+        #'index': X_train.index,
+        #'Actual': y_train,
         'Predicted': y_train_pred_classes
     })
 
     test_results = pd.DataFrame({
-        'index': X_test.index,
-        'Actual': y_test,
+        #'index': X_test.index,
+        #'Actual': y_test,
         'Predicted': y_test_pred_classes
     })
 
@@ -950,7 +950,7 @@ with col1:
   run_logreg = st.checkbox("Создать модель Логистической Регрессии!")
   if run_logreg:
     model, metrics_df, y_train_pred, y_test_pred  = logistic_regression(X_train, X_test, y_train, y_test)
-    st.session_state.logreg_model = model
+    logreg_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
@@ -1001,7 +1001,7 @@ with col4:
   run_knn = st.checkbox("Создать модель KNN!")
   if knn_neighbors and run_knn:
     model, metrics_df, y_train_pred, y_test_pred = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
-    st.session_state.knn_model = model
+    knn_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
@@ -1034,7 +1034,7 @@ with col6:
   run_svc = st.checkbox("Создать модель SVC!")
   if run_svc:
     model, metrics_df, y_train_pred, y_test_pred = svc(X_train, X_test, y_train, y_test)
-    st.session_state.svc_model = model
+    svc_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
@@ -1056,7 +1056,7 @@ with col7:
     model, metrics_df, y_train_pred, y_test_pred =  perceptron_classifier(X_train, X_test, y_train, y_test,
                           layers_target = eval(p_layers_target), neurons_target = eval(p_neurons_target), learning_rate_target = eval(p_learning_rate_target),
                           epochs_target = eval(p_epochs_target))
-    st.session_state.knn_model = perceptron_model
+    knn_model = perceptron_model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
 
