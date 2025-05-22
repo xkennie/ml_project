@@ -798,20 +798,6 @@ def xgboost(X_train, X_test, y_train, y_test, learning_rate=0.01, n_estimators=5
             f1_score(y_train, y_train_pred, average='weighted'),
             f1_score(y_test, y_test_pred, average='weighted')
         ],
-        'ROC-AUC': [
-            roc_auc_score(
-                pd.get_dummies(y_train),
-                xgboost_model.predict_proba(X_train),
-                multi_class='ovr',
-                average='weighted'
-            ) if len(np.unique(y_train_encoded)) > 2 else np.nan,
-            roc_auc_score(
-                pd.get_dummies(y_test),
-                xgboost_model.predict_proba(X_test),
-                multi_class='ovr',
-                average='weighted'
-            ) if len(np.unique(y_test_encoded)) > 2 else np.nan
-        ]
     }
 
     metrics_df = pd.DataFrame(metrics, index=['Train', 'Test'])
@@ -825,21 +811,21 @@ def xgboost(X_train, X_test, y_train, y_test, learning_rate=0.01, n_estimators=5
         plot_confusion_matrix(y_test, y_test_pred, 'Test\nXGBoost')
 
     # Важность признаков
-    st.subheader("Важность признаков")
-    fig, ax = plt.subplots(figsize=(10, 6))
-    xgb.plot_importance(xgboost_model, ax=ax)
-    st.pyplot(fig)
+    #st.subheader("Важность признаков")
+    #fig, ax = plt.subplots(figsize=(10, 6))
+    #xgb.plot_importance(xgboost_model, ax=ax)
+    #st.pyplot(fig)
 
     # Создание DataFrame с результатами
     train_results = pd.DataFrame({
-        'index': X_train.index,
-        'Actual': y_train,
+        #'index': X_train.index,
+        #'Actual': y_train,
         'Predicted': y_train_pred
     })
 
     test_results = pd.DataFrame({
-        'index': X_test.index,
-        'Actual': y_test,
+        #'index': X_test.index,
+        #'Actual': y_test,
         'Predicted': y_test_pred
     })
 
