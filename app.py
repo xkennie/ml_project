@@ -668,11 +668,12 @@ else:
 def plot_confusion_matrix(y_true, y_pred, title):
     cm = confusion_matrix(y_true, y_pred)
     #st.write(cm)
-    fig, ax = plt.subplots(figsize=(10, 12))
-    sns.heatmap(cm, annot=cm, cbar=False, square = True, fmt='d', ax=ax)
+    №fig, ax = plt.subplots(figsize=(10, 12))
+    sns.heatmap(cm, annot=cm, cbar=False, square = True, fmt='.f1', ax=ax)
     ax.set_title(title)
     ax.set_xlabel('Predicted')
     ax.set_ylabel('Actual')
+    plt.tight_layout()
     st.pyplot(fig)
 
 def evaluate_model(model, X_train, X_test, y_train, y_test, model_name, use_cv=False, cv_folds=5):
