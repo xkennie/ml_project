@@ -1210,14 +1210,14 @@ if new_file:
         new_data_processed = handle_missing_values(processed_data, method)
 
         st.success("Данные успешно предобработаны!")
-        st.dataframe(processed_data.head())
+        st.dataframe(new_data_processed.head())
 
     except Exception as e:
         st.error(f"Ошибка при предобработке данных: {str(e)}")
         st.stop()
 
     X_train, X_test, y_train, y_test, train_ids, test_ids = preprocess_data(
-        data=processed_data.assign(target_col=None),
+        data=new_data_processed.assign(target_col=None),
         target_col=target_col,
         id_cols=id_cols,
         features=selected_features,
