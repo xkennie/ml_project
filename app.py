@@ -1080,65 +1080,107 @@ available_functions = {
 use_cv = st.sidebar.checkbox("Использовать кросс-валидацию", value=False)
 cv_folds = st.sidebar.slider("Количество фолдов", 2, 10, 5)
 
-st.title("ML Ансамбль")
+# Ансамблирование
 
-# ======= Выбор моделей =======
-selected_function_names = st.multiselect("Выберите модели", list(available_functions.keys()))
+def voting_ensemble(models, X_train, X_test, y_train, y_test):
+    """
+    Ансамбль методом голосования
+    """
+    voting = VotingClassifier(
+        estimators=[(name, model) for name, model in models.items()],
+        voting='hard'
+    )
+    voting.fit(X_train, y_train)
+    return evaluate_model(voting, X_train, X_test, y_train, y_test, "Voting Ensemble")
 
-# ======= Ввод параметров =======
-func_params = {}
-for name in selected_function_names:
-    func = available_functions[name]
-    sig = inspect.signature(func)
-    params_to_remove = {'X_train', 'X_test', 'y_train', 'y_test'}
-    new_params = {
-        name: param 
-        for name, param in sig.parameters.items()
-        if name not in params_to_remove
-    }
-    sig = sig.replace(parameters=list(new_params.values()))
-    #sig = list(sig)
-    #sig = sig.remove(X_train)
-    #sig = sig.remove(X_test)
-    #sig = sig.remove(y_train)
-    #sig = sig.remove(y_test)
-    st.subheader(f"Параметры для {name}")
-    params = {}
-    for param in sig.parameters.values():
-        default_val = "" if param.default is param.empty else param.default
-        input_val = st.text_input(f"{name} - {param.name}", value=str(default_val))
-        params[param.name] = eval(input_val)
-    params["X_train"] = X_train 
-    params["X_test"] = X_test 
-    params["y_train"] = y_train 
-    params["y_test"] = y_test 
-    func_params[name] = params
-    
+def stacking_ensemble(models, X_train, X_test, y_train, y_test):
+    """
+    Ансамбль методом стэкинга
+    """
+    stacking = StackingClassifier(
+        estimators=[(name, model) for name, model in models.items()],
+        final_estimator=LogisticRegression(max_iter=1000),
+        cv=5
+    )
+    stacking.fit(X_train, y_train)
+    return evaluate_model(stacking, X_train, X_test, y_train, y_test, "Stacking Ensemble")
 
-# ======= Кнопка запуска =======
-if st.button("Запустить ансамбль"):
-    merged_df = None
-    for name in selected_function_names:
-        func = available_functions[name]
-        params = func_params.get(name, {})
-        result = func(**params)
-        if merged_df is None:
-            merged_df = result
+st.title("Ансамбль моделей")
+
+# Собираем построенные модели
+built_models = {}
+if logreg_model in globals():
+    built_models['Logistic Regression'] = logreg_model
+if 'tree_model' in globals():
+    built_models['Decision Tree'] = tree_model
+if 'rf_model' in globals():
+    built_models['Random Forest'] = rf_model
+if 'xgb_model' in globals():
+    built_models['XGBoost'] = xgb_model
+if 'svc_model' in globals():
+    built_models['SVC'] = svc_model
+if 'knn_model' in globals():
+    built_models['KNN'] = knn_model
+if 'perceptron_model' in globals():
+    built_models['Perceptron'] = .perceptron_model
+
+if not built_models:
+    st.warning("Постройте хотя бы одну модель перед созданием ансамбля")
+    st.stop()
+
+# Выбор моделей для ансамбля
+selected_models = st.multiselect(
+    "Выберите модели для ансамбля",
+    options=list(built_models.keys()),
+    default=list(built_models.keys())
+)
+
+if len(selected_models) < 2:
+    st.warning("Для ансамбля нужно выбрать хотя бы 2 модели")
+    st.stop()
+
+# Выбор метода ансамблирования
+ensemble_method = st.selectbox(
+    "Метод ансамблирования",
+    ["Голосование", "Стэкинг"],
+    index=0
+)
+
+# Кнопка запуска ансамбля
+if st.checkbox("Построить ансамбль"):
+    # Собираем выбранные модели
+    models_to_ensemble = {name: built_models[name] for name in selected_models}
+
+    with st.spinner("Строим ансамбль..."):
+        if ensemble_method == "Голосование":
+            model, metrics, train_pred, test_pred = voting_ensemble(
+                models_to_ensemble, X_train, X_test, y_train, y_test
+            )
         else:
-            merged_df = pd.merge(merged_df, result, on=['index', 'Style'])
+            model, metrics, train_pred, test_pred = stacking_ensemble(
+                models_to_ensemble, X_train, X_test, y_train, y_test
+            )
 
-    # ======= Голосование =======
-    pred_cols = [col for col in merged_df.columns if col.endswith('_predict')]
-    def majority_vote(row):
-        votes = [row[col] for col in pred_cols]
-        return Counter(votes).most_common(1)[0][0]
+        # Сохраняем результаты
+        st.session_state.ensemble_model = model
+        st.session_state.ensemble_metrics = metrics
+        st.session_state.ensemble_train_pred = train_pred
+        st.session_state.ensemble_test_pred = test_pred
 
-    merged_df['overall_predict'] = merged_df.apply(majority_vote, axis=1)
+        # Вывод результатов
+        st.success("Ансамбль успешно построен!")
 
-    # ======= Accuracy (если есть столбец ground truth) =======
-    if 'Style' in merged_df.columns:
-        acc = (merged_df['overall_predict'] == merged_df['Style']).mean()
-        st.write(f"Accuracy: {acc:.2%}")
-    
-    st.write("Результат ансамбля:")
-    st.dataframe(merged_df[['Style', 'overall_predict']])
+        st.subheader("Метрики ансамбля")
+        st.dataframe(metrics.style.format("{:.2%}"))
+
+        st.subheader("Train predictions")
+        st.dataframe(pd.DataFrame({
+            'Actual': y_train,
+            'Predicted': train_pred
+        }).head())
+
+        st.subheader("Test predictions")
+        st.dataframe(pd.DataFrame({
+            'Actual': y_test,
+            'Predicted': test_pred
+        }).head())
