@@ -909,7 +909,7 @@ with col2:
   minsamples = st.text_input("min_samples", value = 10)
   run_tree = st.checkbox("Создать модель дерева!")
   if deps and minsamples and run_tree:
-    model, metrics_df, y_train_pred, y_test_pred = tree(X_train, X_test, y_train, y_test, max_depth_target = int(deps), min_samples_split_target = eval(minsamples))
+    model, metrics_df, y_train_pred, y_test_pred = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
     st.session_state.tree_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
