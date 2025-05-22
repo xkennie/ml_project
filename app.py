@@ -949,7 +949,7 @@ with col3:
 
 with col4:
   st.subheader("XGBoost")
-  xgb_learning_rate = st.text_input("XGB_max_depth", value = 0.01)
+  xgb_learning_rate = st.text_input("xgb_learning_rate", value = 0.01)
   xgb_estimators = st.text_input("XGB_min_samples", value = 50)
   xgb_deps = st.text_input("XGB_max_depth", value = 10)
   run_xgb = st.checkbox("Создать модель XGBoost!")
