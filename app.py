@@ -1122,7 +1122,7 @@ if 'svc_model' in globals():
 if 'knn_model' in globals():
     built_models['KNN'] = knn_model
 if 'perceptron_model' in globals():
-    built_models['Perceptron'] = .perceptron_model
+    built_models['Perceptron'] = perceptron_model
 
 if not built_models:
     st.warning("Постройте хотя бы одну модель перед созданием ансамбля")
