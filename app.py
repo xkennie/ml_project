@@ -657,93 +657,191 @@ else:
     X_test = X_test
     y_train = y_train
     y_test = y_test
-  
-#logreg
-def logistic_regression(X_train, X_test, y_train, y_test):
-  X_train, X_test, y_train, y_test = X_train, X_test, y_train, y_test #preprocess(X_train, X_test, y_train, y_test)
+
+
+def plot_confusion_matrix(y_true, y_pred, title):
+    cm = confusion_matrix(y_true, y_pred)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False, ax=ax)
+    ax.set_title(title)
+    ax.set_xlabel('Predicted')
+    ax.set_ylabel('Actual')
+    st.pyplot(fig)
+
+def evaluate_model(model, X_train, X_test, y_train, y_test, model_name, use_cv=False, cv_folds=5):
+    if use_cv:
+        scores = cross_val_score(model, X_train, y_train, cv=cv_folds, scoring='accuracy')
+        st.write(f"Кросс-валидация (Accuracy): Среднее = {scores.mean():.4f}, Std = {scores.std():.4f}")
+        model.fit(X_train, y_train)
+        y_train_pred = model.predict(X_train)
+        y_test_pred = model.predict(X_test)
+    else:
+        model.fit(X_train, y_train)
+        y_train_pred = model.predict(X_train)
+        y_test_pred = model.predict(X_test)
+
+    metrics = {
+        'Accuracy': [
+            accuracy_score(y_train, y_train_pred),
+            accuracy_score(y_test, y_test_pred)
+        ],
+        'Precision': [
+            precision_score(y_train, y_train_pred, average='weighted'),
+            precision_score(y_test, y_test_pred, average='weighted')
+        ],
+        'Recall': [
+            recall_score(y_train, y_train_pred, average='weighted'),
+            recall_score(y_test, y_test_pred, average='weighted')
+        ],
+        'F1': [
+            f1_score(y_train, y_train_pred, average='weighted'),
+            f1_score(y_test, y_test_pred, average='weighted')
+        ]
+    }
+
+    metrics_df = pd.DataFrame(metrics, index=['Train', 'Test'])
+
+    st.subheader(f"Матрицы ошибок для {model_name}")
+    col1, col2 = st.columns(2)
+    with col1:
+        plot_confusion_matrix(y_train, y_train_pred, f'Train\n{model_name}')
+    with col2:
+        plot_confusion_matrix(y_test, y_test_pred, f'Test\n{model_name}')
+
+    return model, metrics_df, y_train_pred, y_test_pred  
+models = {}
+#logreп
+def logistic_regression(X_train, X_test, y_train, y_test, use_cv=False, cv_folds=5):
   logreg = LogisticRegression(
     multi_class='multinomial',
     max_iter = 1000
 )
   logreg.fit(X_train, y_train)
-  y_pred = logreg.predict(X_test)
-  predict = pd.Series(y_pred)
-  logreg_predicts = pd.concat([y_test.reset_index(), predict], axis = 1)
-  logreg_predicts.columns = ['index', 'Style', 'Logreg_predict']
-  return logreg_predicts
+  return evaluate_model(logreg, X_train, X_test, y_train, y_test, "Logistic Regression", use_cv=use_cv, cv_folds=cv_folds)
 
 #tree
-def tree(X_train, X_test, y_train, y_test, max_depth_target = 10, min_samples_split_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
+def tree(X_train, X_test, y_train, y_test, max_depth_target = 10, min_samples_split_target = 10, use_cv=False, cv_folds=5):
   tree = DecisionTreeClassifier(
     max_depth = max_depth_target,             # Максимальная глубина
     min_samples_split = min_samples_split_target,     # Минимальное число образцов для разделения
 )
   tree.fit(X_train, y_train)
-  y_pred = tree.predict(X_test)
-  #y_pred_train = tree.predict(X_train)
-  predict = pd.Series(y_pred)
-  tree_predicts = pd.concat([y_test.reset_index(), predict], axis = 1)
-  #tree_predicts = tree_predicts.replace({0: 'predict'})
-  tree_predicts.columns = ['index', 'Style', 'Tree_predict']
-  #return tree_train_predicts, tree_predicts
-  return tree_predicts
+  return evaluate_model(tree, X_train, X_test, y_train, y_test, "Decision Tree", use_cv=use_cv, cv_folds=cv_folds)
 
 #forest
-def random_forest(X_train, X_test, y_train, y_test, estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
+def random_forest(X_train, X_test, y_train, y_test, estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10, use_cv=False, cv_folds=5):
   random_forest = RandomForestClassifier(
     n_estimators = estimators_target,  # Число деревьев
-    max_features='sqrt', 
+    max_features='sqrt',
     max_depth = max_depth_target,
     min_samples_split = min_samples_split_target
 )
   random_forest.fit(X_train, y_train)
-  y_pred = random_forest.predict(X_test)
-  predict = pd.Series(y_pred)
-  random_forest_predicts = pd.concat([y_test.reset_index(), predict], axis = 1)
-  random_forest_predicts.columns = ['index', 'Style', 'Random_Forest_predict']
-  return random_forest_predicts
+  return evaluate_model(random_forest, X_train, X_test, y_train, y_test, "Random Forest", use_cv=use_cv, cv_folds=cv_folds)
+
 
 #xgboost
-def xgboost(X_train, X_test, y_train, y_test, learning_rate_target = 0.01, estimators_target = 50, max_depth_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
-  le = LabelEncoder()
-  y_train = le.fit_transform(y_train)
-  xgboost = XGBClassifier(
-    n_estimators = estimators_target,
-    max_depth = max_depth_target,
-    learning_rate = learning_rate_target,
-    random_state = 42
-)
-  xgboost.fit(X_train, y_train)
-  y_pred = xgboost.predict(X_test)
-  y_pred = le.inverse_transform(y_pred)
-  predict = pd.Series(y_pred)
-  xgboost_predicts = pd.concat([y_test.reset_index(), predict], axis = 1)
-  xgboost_predicts.columns = ['index', 'Style', 'XGBoost_predict']
-  return xgboost_predicts
+def xgboost(X_train, X_test, y_train, y_test, learning_rate=0.01, n_estimators=50, max_depth=10, use_cv=False, cv_folds=5):
+    le = LabelEncoder()
+    y_train_encoded = le.fit_transform(y_train)
+    y_test_encoded = le.transform(y_test)
+
+    # Создание и обучение модели
+    xgboost_model = XGBClassifier(
+        learning_rate=learning_rate,
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        random_state=42,
+        eval_metric='mlogloss',  # Для многоклассовой классификации
+        use_label_encoder=False  # Чтобы избежать предупреждений
+    )
+
+    if use_cv:
+        scores = cross_val_score(xgboost_model, X_train, y_train_encoded, cv=cv_folds, scoring='accuracy')
+        st.write(f"Кросс-валидация (Accuracy): Среднее = {scores.mean():.4f}, Std = {scores.std():.4f}")
+
+    xgboost_model.fit(X_train, y_train_encoded)
+
+    # Предсказания
+    y_train_pred = le.inverse_transform(xgboost_model.predict(X_train))
+    y_test_pred = le.inverse_transform(xgboost_model.predict(X_test))
+
+    # Расчет метрик
+    metrics = {
+        'Accuracy': [
+            accuracy_score(y_train, y_train_pred),
+            accuracy_score(y_test, y_test_pred)
+        ],
+        'Precision': [
+            precision_score(y_train, y_train_pred, average='weighted'),
+            precision_score(y_test, y_test_pred, average='weighted')
+        ],
+        'Recall': [
+            recall_score(y_train, y_train_pred, average='weighted'),
+            recall_score(y_test, y_test_pred, average='weighted')
+        ],
+        'F1': [
+            f1_score(y_train, y_train_pred, average='weighted'),
+            f1_score(y_test, y_test_pred, average='weighted')
+        ],
+        'ROC-AUC': [
+            roc_auc_score(
+                pd.get_dummies(y_train),
+                xgboost_model.predict_proba(X_train),
+                multi_class='ovr',
+                average='weighted'
+            ) if len(np.unique(y_train_encoded)) > 2 else np.nan,
+            roc_auc_score(
+                pd.get_dummies(y_test),
+                xgboost_model.predict_proba(X_test),
+                multi_class='ovr',
+                average='weighted'
+            ) if len(np.unique(y_test_encoded)) > 2 else np.nan
+        ]
+    }
+
+    metrics_df = pd.DataFrame(metrics, index=['Train', 'Test'])
+
+    # Визуализация
+    st.subheader("Матрицы ошибок для XGBoost")
+    col1, col2 = st.columns(2)
+    with col1:
+        plot_confusion_matrix(y_train, y_train_pred, 'Train\nXGBoost')
+    with col2:
+        plot_confusion_matrix(y_test, y_test_pred, 'Test\nXGBoost')
+
+    # Важность признаков
+    st.subheader("Важность признаков")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    xgb.plot_importance(xgboost_model, ax=ax)
+    st.pyplot(fig)
+
+    # Создание DataFrame с результатами
+    train_results = pd.DataFrame({
+        'index': X_train.index,
+        'Actual': y_train,
+        'Predicted': y_train_pred
+    })
+
+    test_results = pd.DataFrame({
+        'index': X_test.index,
+        'Actual': y_test,
+        'Predicted': y_test_pred
+    })
+
+    return xgboost_model, metrics_df, y_train_pred, y_test_pred
 
 #Support-vector-calc
-def svc(X_train, X_test, y_train, y_test):
-  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
+def svc(X_train, X_test, y_train, y_test, use_cv=False, cv_folds=5):
   svc = SVC()
   svc.fit(X_train, y_train)
-  y_pred = svc.predict(X_test)
-  predict = pd.Series(y_pred)
-  svc_predicts = pd.concat([y_test.reset_index(), predict], axis = 1)
-  svc_predicts.columns = ['index', 'Style', 'SVC_predict']
-  return svc_predicts
+  return evaluate_model(svc, X_train, X_test, y_train, y_test, "SVC", use_cv=use_cv, cv_folds=cv_folds)
+
 #knn
-def knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = 10):
-  X_train, X_test, y_train, y_test = preprocess(X_train, X_test, y_train, y_test)
+def knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = 10, use_cv=False, cv_folds=5):
   knn = KNeighborsClassifier(n_neighbors= neighbors_target)
   knn.fit(X_train, y_train)
-  y_pred = knn.predict(X_test)
-  predict = pd.Series(y_pred)
-  knn_predicts = pd.concat([y_test.reset_index(), predict], axis = 1)
-  knn_predicts.columns = ['index', 'Style', 'KNN_predict']
-  return knn_predicts
+  return evaluate_model(knn, X_train, X_test, y_train, y_test, "KNN", use_cv=use_cv, cv_folds=cv_folds)
 
 def perceptron_classifier(X_train, X_test, y_train, y_test,
                           layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
