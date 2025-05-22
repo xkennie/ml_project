@@ -649,8 +649,9 @@ if st.button("Подготовить данные", type="primary"):
     #X_test = st.session_state.X_test
     #y_train = st.session_state.y_train
     #y_test = st.session_state.y_test
-if not X_train:
+if 'X_train' not in globals():
     st.warning("Подготовьте, пожалуйста, данные")
+    st.stop()
 else:
     X_train = X_train
     X_test = X_test
