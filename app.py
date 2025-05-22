@@ -732,7 +732,7 @@ def tree(X_train, X_test, y_train, y_test, max_depth_target = 10, min_samples_sp
     min_samples_split = min_samples_split_target,     # Минимальное число образцов для разделения
 )
   tree.fit(X_train, y_train)
-  return evaluate_model(tree, X_train, X_test, y_train, y_test, tree, use_cv=use_cv, cv_folds=cv_folds)
+  return evaluate_model(tree, X_train, X_test, y_train, y_test, "Decision Tree", use_cv=use_cv, cv_folds=cv_folds)
 
 #forest
 def random_forest(X_train, X_test, y_train, y_test, estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10, use_cv=False, cv_folds=5):
@@ -892,24 +892,34 @@ with col1:
   st.subheader("Logistic Regression")
   run_logreg = st.checkbox("Создать модель Логистической Регрессии!")
   if run_logreg:
-    #_, result = logistic_regression(X_train, X_test, y_train, y_test)
-    result = logistic_regression(X_train, X_test, y_train, y_test)
-    acc = (result['Logreg_predict'] == result['Style']).mean()
-    st.write(f"Accuracy: {acc:.2%}")
-    st.write(result)
-    
+    model, metrics_df, y_train_pred, y_test_pred  = logistic_regression(X_train, X_test, y_train, y_test)
+    st.session_state.logreg_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(y_train_pred.head())
+
+    st.subheader("Test predictions")
+    st.dataframe(y_test_pred.head())
+
 with col2:
-  st.subheader("Tree")
+  st.subheader("Decision Tree")
   deps = st.text_input("max_depth", value = 10)
   minsamples = st.text_input("min_samples", value = 10)
   run_tree = st.checkbox("Создать модель дерева!")
   if deps and minsamples and run_tree:
-    result = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
-    acc = (result['Tree_predict'] == result['Style']).mean()
-    st.write(f"Accuracy: {acc:.2%}")
-    st.write(result)
+    model, metrics_df, y_train_pred, y_test_pred = tree(X_train, X_test, y_train, y_test, max_depth_target = int(deps), min_samples_split_target = eval(minsamples))
+    st.session_state.tree_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
 
-    
+    st.subheader("Train predictions")
+    st.dataframe(y_train_pred.head())
+
+    st.subheader("Test predictions")
+    st.dataframe(y_test_pred.head())
+
 with col3:
   st.subheader("Random Forest")
   rf_estimators = st.text_input("RF_estimators", value = 50)
@@ -917,10 +927,17 @@ with col3:
   rf_minsamples = st.text_input("RF_min_samples", value = 10)
   run_rf = st.checkbox("Создать модель Случайного Леса!")
   if rf_estimators and rf_deps and rf_minsamples and run_rf:
-    result = random_forest(X_train, X_test, y_train, y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
-    acc = (result['Random_Forest_predict'] == result['Style']).mean()
-    st.write(f"Accuracy: {acc:.2%}")
-    st.write(result)
+    model, metrics_df, y_train_pred, y_test_pred = random_forest(X_train, X_test, y_train, y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
+    st.session_state.rf_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(y_train_pred.head())
+
+    st.subheader("Test predictions")
+    st.dataframe(y_test_pred.head())
+
 
 with col4:
   st.subheader("XGBoost")
@@ -929,55 +946,82 @@ with col4:
   xgb_deps = st.text_input("XGB_max_depth", value = 10)
   run_xgb = st.checkbox("Создать модель XGBoost!")
   if run_xgb and xgb_learning_rate and xgb_estimators and xgb_deps:
-    result = xgboost(X_train, X_test, y_train, y_test, learning_rate_target = eval(xgb_learning_rate), estimators_target = eval(xgb_estimators), max_depth_target = eval(xgb_deps))
-    acc = (result['XGBoost_predict'] == result['Style']).mean()
-    st.write(f"Accuracy: {acc:.2%}")
-    st.write(result)
+    model, metrics_df, y_train_pred, y_test_pred = xgboost(X_train, X_test, y_train, y_test, learning_rate_target = eval(xgb_learning_rate), estimators_target = eval(xgb_estimators), max_depth_target = eval(xgb_deps))
+    st.session_state.xgb_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(y_train_pred.head())
+
+    st.subheader("Test predictions")
+    st.dataframe(y_test_pred.head())
 
 with col5:
   st.subheader("SVC")
   run_svc = st.checkbox("Создать модель SVC!")
   if run_svc:
-    result = svc(X_train, X_test, y_train, y_test)
-    acc = (result['SVC_predict'] == result['Style']).mean()
-    st.write(f"Accuracy: {acc:.2%}")
-    st.write(result)
+    model, metrics_df, y_train_pred, y_test_pred = svc(X_train, X_test, y_train, y_test)
+    st.session_state.svc_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(y_train_pred.head())
+
+    st.subheader("Test predictions")
+    st.dataframe(y_test_pred.head())
 
 with col6:
   st.subheader("KNN")
   knn_neighbors = st.text_input("knn_neighbors_target", value = 10)
   run_knn = st.checkbox("Создать модель KNN!")
   if knn_neighbors and run_knn:
-    result = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
-    acc = (result['KNN_predict'] == result['Style']).mean()
-    st.write(f"Accuracy: {acc:.2%}")
-    st.write(result)
-    
+    model, metrics_df, y_train_pred, y_test_pred = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
+    st.session_state.knn_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(y_train_pred.head())
+
+    st.subheader("Test predictions")
+    st.dataframe(y_test_pred.head())
+
 with col7:
   st.subheader("Perceptron")
-  p_layers_target = st.text_input("layers_target", value = 2)
-  p_neurons_target = st.text_input("neurons_target", value = 50)
-  p_learning_rate_target = st.text_input("learning_rate_target", value = 0.01)
+  p_layers_target = st.text_input("layers_target", value = 10)
+  p_neurons_target = st.text_input("neurons_target", value = 0.01)
+  p_learning_rate_target = st.text_input("learning_rate_target", value = 50)
   p_epochs_target = st.text_input("epochs_target", value = 10)
   run_perceptron = st.checkbox("Создать модель Неиросеть!")
   if p_layers_target and p_neurons_target and p_learning_rate_target and p_epochs_target and run_perceptron:
-    result =  perceptron_classifier(X_train, X_test, y_train, y_test,
-                          layers_target = eval(p_layers_target), neurons_target = eval(p_neurons_target), learning_rate_target = eval(p_learning_rate_target),
-                          epochs_target = eval(p_epochs_target)) 
-    acc = (result['Perceptron_predict'] == result['Style']).mean()
-    st.write(f"Accuracy: {acc:.2%}")
-    st.write(result)
+    model, metrics_df, y_train_pred, y_test_pred =  perceptron_classifier(X_train, X_test, y_train, y_test,
+                          layers_target = 2, neurons_target = 50, learning_rate_target = 0.01,
+                          epochs_target = 10)
+    st.session_state.knn_model = perceptron_model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(y_train_pred.head())
+
+    st.subheader("Test predictions")
+    st.dataframe(y_test_pred.head())
 
 # ======= Доступные функции =======
 available_functions = {
-    'logistic_regression': logistic_regression,
-    'tree': tree,
-    'random_forest': random_forest,
-    'xgboost': xgboost,
-    'svc': svc,
-    'knn_classifier': knn_classifier,
-    'perceptron_classifier': perceptron_classifier
+    'Логистическая регрессия': logistic_regression,
+    'Дерево решений': tree,
+    'Рандомный лес': random_forest,
+    'XGboost': xgboost,
+    'Метод Опорных Векторов': svc,
+    'KNN-классификатор': knn_classifier,
+    'Перцептрон-классификатор': perceptron_classifier
 }
+
+use_cv = st.sidebar.checkbox("Использовать кросс-валидацию", value=False)
+cv_folds = st.sidebar.slider("Количество фолдов", 2, 10, 5)
 
 st.title("ML Ансамбль")
 
