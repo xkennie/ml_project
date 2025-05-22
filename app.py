@@ -732,7 +732,7 @@ def tree(X_train, X_test, y_train, y_test, max_depth_target = 10, min_samples_sp
     min_samples_split = min_samples_split_target,     # Минимальное число образцов для разделения
 )
   tree.fit(X_train, y_train)
-  return evaluate_model(tree, X_train, X_test, y_train, y_test, "Decision Tree", use_cv=use_cv, cv_folds=cv_folds)
+  return evaluate_model(tree, X_train, X_test, y_train, y_test, tree, use_cv=use_cv, cv_folds=cv_folds)
 
 #forest
 def random_forest(X_train, X_test, y_train, y_test, estimators_target = 50, max_depth_target = 10, min_samples_split_target = 10, use_cv=False, cv_folds=5):
