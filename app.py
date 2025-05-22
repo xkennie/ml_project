@@ -667,7 +667,7 @@ else:
 
 def plot_confusion_matrix(y_true, y_pred, title):
     cm = confusion_matrix(y_true, y_pred)
-    #st.write(cm)
+    st.write(cm)
     fig, ax = plt.subplots(figsize=(10, 12))
     sns.heatmap(cm, annot=True, cbar=False, fmt = "d",  ax=ax)
     ax.set_title(title)
@@ -678,7 +678,7 @@ def plot_confusion_matrix(y_true, y_pred, title):
     for i in range(cm.shape[0]):
         for j in range(cm.shape[1]):
             ax.text(j+0.5, i+0.5, str(cm[i, j]),
-                    ha='center', va='center', color='black')
+                    ha='center', va='center', color='white')
     
     st.pyplot(fig, clear_figure=True)
 
