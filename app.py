@@ -942,7 +942,7 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
         'Predicted': y_test_pred_classes
     })
 
-    return model, metrics_df, y_train_pred, y_test_pred
+    return model, metrics_df, y_train_pred_classes, y_test_pred_classes
 # ======== Models row ============
 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 with col1:
@@ -1061,10 +1061,10 @@ with col7:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(pd.Series(le.inverse_transform(np.argmax(y_train_pred, axis = 1))).head())
+    st.dataframe(pd.Series(y_train_pred).head())
 
     st.subheader("Test predictions")
-    st.dataframe(pd.Series(le.inverse_transform(np.argmax(y_test_pred, axis = 1))).head())
+    st.dataframe(pd.Series(y_test_pred).head())
 
 # ======= Доступные функции =======
 available_functions = {
