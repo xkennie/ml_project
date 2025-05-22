@@ -1061,10 +1061,10 @@ with col7:
     st.dataframe(metrics_df)
 
     st.subheader("Train predictions")
-    st.dataframe(pd.Series(np.argmax(y_train_pred, axis = 1)).head())
+    st.dataframe(pd.Series(le.inverse_transform(np.argmax(y_train_pred, axis = 1))).head())
 
     st.subheader("Test predictions")
-    st.dataframe(pd.Series(np.argmax(y_test_pred, axis = 1)).head())
+    st.dataframe(pd.Series(le.inverse_transform(np.argmax(y_test_pred, axis = 1))).head())
 
 # ======= Доступные функции =======
 available_functions = {
