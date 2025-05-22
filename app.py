@@ -1192,7 +1192,7 @@ new_file = st.file_uploader("Загрузите новые данные (CSV и�
 if new_file:
     # Определяем тип файла
     if new_file.name.endswith('.csv'):
-        new_data = pd.read_csv(new_file, sep=sep_sign, decimal=decimal_sign))
+        new_data = pd.read_csv(new_file, sep=sep_sign, decimal=decimal_sign)
     else:
         new_data = pd.read_excel(new_file)
 
