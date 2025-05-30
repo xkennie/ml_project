@@ -1227,7 +1227,7 @@ if new_file:
             log_cols=log_cols,
             dummy_cols=dummy_cols,
             balance_method=balance_method,
-            test_size=0.01,
+            test_size=0.1,
             random_state=random_state
         )
     #preprocess_data = pd.concat([X_train, X_test]).drop_duplicates(ignore_index=True)
