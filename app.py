@@ -1218,7 +1218,7 @@ if new_file:
 
     with st.spinner("Обработка данных..."):
         # Полная обработка данных с разбиением
-        X_train, X_test, y_train, y_test, train_ids, test_ids = preprocess_data(
+        X_train_new, X_test_new, y_train_new, y_test_new, train_ids_new, test_ids_new = preprocess_data(
             data=new_data_processed,
             target_col=target_col,
             id_cols=id_cols,
@@ -1227,10 +1227,10 @@ if new_file:
             log_cols=log_cols,
             dummy_cols=dummy_cols,
             balance_method=balance_method,
-            test_size=test_size,
+            test_size=0,
             random_state=random_state
         )
-    preprocess_data = pd.concat([X_train, X_test]).drop_duplicates(ignore_index=True)
+    #preprocess_data = pd.concat([X_train, X_test]).drop_duplicates(ignore_index=True)
 
     # 3. Выбор моделей для предсказания
     st.header("3. Выбор моделей для предсказания")
@@ -1278,7 +1278,7 @@ if new_file:
 
                 # Для остальных моделей
                 else:
-                    predictions[model_name] = model.predict(processed_data)
+                    predictions[model_name] = model.predict(X_train_new)
 
             except Exception as e:
                 st.error(f"Ошибка при предсказании с помощью {model_name}: {str(e)}")
