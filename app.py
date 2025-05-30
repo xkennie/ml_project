@@ -1230,7 +1230,7 @@ if new_file:
             test_size=0.1,
             random_state=random_state
         )
-    #preprocess_data = pd.concat([X_train, X_test]).drop_duplicates(ignore_index=True)
+    preprocess_data = np.vstack([X_train, X_test])
 
     # 3. Выбор моделей для предсказания
     st.header("3. Выбор моделей для предсказания")
@@ -1278,7 +1278,7 @@ if new_file:
 
                 # Для остальных моделей
                 else:
-                    predictions[model_name] = model.predict(X_train_new)
+                    predictions[model_name] = model.predict(preprocess_data)
 
             except Exception as e:
                 st.error(f"Ошибка при предсказании с помощью {model_name}: {str(e)}")
