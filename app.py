@@ -1109,7 +1109,7 @@ st.title("Ансамбль моделей")
 
 # Собираем построенные модели
 built_models = {}
-if logreg_model in globals():
+if 'logreg_model' in globals():
     built_models['Logistic Regression'] = logreg_model
 if 'tree_model' in globals():
     built_models['Decision Tree'] = tree_model
