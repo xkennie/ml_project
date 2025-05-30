@@ -1230,7 +1230,7 @@ if new_file:
             test_size=0.1,
             random_state=random_state
         )
-    preprocess_data = np.vstack([X_train, X_test])
+    preprocess_data = np.vstack([X_train_new, X_test_new])
 
     # 3. Выбор моделей для предсказания
     st.header("3. Выбор моделей для предсказания")
@@ -1249,7 +1249,7 @@ if new_file:
 
     # 4. Выполнение предсказаний
     if st.checkbox("Выполнить предсказания"):
-        predictions = pd.DataFrame(index=processed_data.index)
+        predictions = [0]*preproce
 
         for model_name in selected_models:
             model = available_models[model_name]
