@@ -1216,18 +1216,20 @@ if new_file:
         st.error(f"Ошибка при предобработке данных: {str(e)}")
         st.stop()
 
-    X_train, X_test, y_train, y_test, train_ids, test_ids = preprocess_data(
-        data=new_data_processed.assign(target_col=None),
-        target_col=target_col,
-        id_cols=id_cols,
-        features=selected_features,
-        norm_cols=norm_cols,
-        log_cols=log_cols,
-        dummy_cols=dummy_cols,
-        balance_method=balance_method,
-        test_size=test_size,
-        random_state=random_state
-    )
+    with st.spinner("Обработка данных..."):
+        # Полная обработка данных с разбиением
+        X_train, X_test, y_train, y_test, train_ids, test_ids = preprocess_data(
+            data=new_data_processed,
+            target_col=target_col,
+            id_cols=id_cols,
+            features=selected_features,
+            norm_cols=norm_cols,
+            log_cols=log_cols,
+            dummy_cols=dummy_cols,
+            balance_method=balance_method,
+            test_size=test_size,
+            random_state=random_state
+        )
     preprocess_data = pd.concat([X_train, X_test]).drop_duplicates(ignore_index=True)
 
     # 3. Выбор моделей для предсказания
