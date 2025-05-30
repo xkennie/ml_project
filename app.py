@@ -1249,7 +1249,7 @@ if new_file:
 
     # 4. Выполнение предсказаний
     if st.checkbox("Выполнить предсказания"):
-        predictions = pd.DataFrame(index=new_preprocess_data.index)
+        predictions = pd.DataFrame(index=pd.DataFrame(new_preprocess_data).index)
 
         for model_name in selected_models:
             model = available_models[model_name]
