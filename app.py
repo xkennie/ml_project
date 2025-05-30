@@ -1230,7 +1230,7 @@ if new_file:
             test_size=0.1,
             random_state=random_state
         )
-    preprocess_data = np.vstack([X_train_new, X_test_new])
+    new_preprocess_data = np.vstack([X_train_new, X_test_new])
 
     # 3. Выбор моделей для предсказания
     st.header("3. Выбор моделей для предсказания")
@@ -1249,7 +1249,7 @@ if new_file:
 
     # 4. Выполнение предсказаний
     if st.checkbox("Выполнить предсказания"):
-        predictions = [0]*preproce
+        predictions = pd.DataFrame(index=new_preprocess_data.index)
 
         for model_name in selected_models:
             model = available_models[model_name]
@@ -1262,7 +1262,7 @@ if new_file:
                         continue
 
                     le = st.session_state.label_encoder
-                    pred = model.predict(processed_data)
+                    pred = model.predict(new_preprocess_data)
                     predictions[model_name] = le.inverse_transform(pred)
 
                 # Особый случай для перцептрона
@@ -1272,13 +1272,13 @@ if new_file:
                         continue
 
                     le = perceptron_encoder
-                    pred_proba = model.predict(processed_data)
+                    pred_proba = model.predict(new_preprocess_data)
                     pred = np.argmax(pred_proba, axis=1)
                     predictions[model_name] = le.inverse_transform(pred)
 
                 # Для остальных моделей
                 else:
-                    predictions[model_name] = model.predict(preprocess_data)
+                    predictions[model_name] = model.predict(new_preprocess_data)
 
             except Exception as e:
                 st.error(f"Ошибка при предсказании с помощью {model_name}: {str(e)}")
