@@ -335,9 +335,9 @@ if st.checkbox("Обработать пропущенные значения", k
 
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("Исходное количество строк", len(backup_df))
+            st.metric("Исходное количество строк", len(st.session_state.backup_df))
         with col2:
-            st.metric("Количество строк после обработки", len(df))
+            st.metric("Количество строк после обработки", len(st.session_state.df))
 
 # Показать обработанный датафрейм
 st.dataframe(st.session_state.df)
