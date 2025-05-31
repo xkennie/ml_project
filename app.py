@@ -1060,4 +1060,141 @@ def models_interface(X_train, X_test, y_train, y_test):
                     layers, neurons, learning_rate, epochs, use_cv, cv_folds
                 )
                 st.dataframe(metrics)
-    models_interface(st.session_state.X_train, st.session_state.X_test, st.session_state.y_train, st.session_state.y_test)
+# ======== Models row ============
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+with col1:
+  st.subheader("Logistic Regression")
+  run_logreg = st.checkbox("Создать модель Логистической Регрессии!")
+  if run_logreg:
+    model, metrics_df, y_train_pred, y_test_pred  = logistic_regression(X_train, X_test, y_train, y_test)
+    logreg_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+with col2:
+  st.subheader("Decision Tree")
+  deps = st.text_input("max_depth", value = 10)
+  minsamples = st.text_input("min_samples", value = 10)
+  run_tree = st.checkbox("Создать модель дерева!")
+  if deps and minsamples and run_tree:
+    model, metrics_df, y_train_pred, y_test_pred = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
+    tree_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+with col3:
+  st.subheader("Random Forest")
+  rf_estimators = st.text_input("RF_estimators", value = 50)
+  rf_deps = st.text_input("RF_max_depth", value = 10)
+  rf_minsamples = st.text_input("RF_min_samples", value = 10)
+  run_rf = st.checkbox("Создать модель Случайного Леса!")
+  if rf_estimators and rf_deps and rf_minsamples and run_rf:
+    model, metrics_df, y_train_pred, y_test_pred = random_forest(X_train, X_test, y_train, y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
+    rf_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+with col4:
+  st.subheader("KNN")
+  knn_neighbors = st.text_input("knn_neighbors_target", value = 10)
+  run_knn = st.checkbox("Создать модель KNN!")
+  if knn_neighbors and run_knn:
+    model, metrics_df, y_train_pred, y_test_pred = knn_classifier(X_train, X_test, y_train, y_test, neighbors_target = eval(knn_neighbors))
+    knn_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+with col5:
+  st.subheader("XGBoost")
+  xgb_learning_rate = st.text_input("xgb_learning_rate", value = 0.01)
+  xgb_estimators = st.text_input("XGB_min_samples", value = 50)
+  xgb_deps = st.text_input("XGB_max_depth", value = 10)
+  run_xgb = st.checkbox("Создать модель XGBoost!")
+  if run_xgb and xgb_learning_rate and xgb_estimators and xgb_deps:
+    model, metrics_df, y_train_pred, y_test_pred = xgboost(X_train, X_test, y_train, y_test, learning_rate = eval(xgb_learning_rate), n_estimators = eval(xgb_estimators), max_depth = eval(xgb_deps))
+    xgb_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+with col6:
+  st.subheader("SVC")
+  run_svc = st.checkbox("Создать модель SVC!")
+  if run_svc:
+    model, metrics_df, y_train_pred, y_test_pred = svc(X_train, X_test, y_train, y_test)
+    svc_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+
+with col7:
+  st.subheader("Perceptron")
+  p_layers_target = st.text_input("layers_target", value = 2)
+  p_neurons_target = st.text_input("neurons_target", value = 50)
+  p_learning_rate_target = st.text_input("learning_rate_target", value = 0.01)
+  p_epochs_target = st.text_input("epochs_target", value = 10)
+  run_perceptron = st.checkbox("Создать модель Неиросеть!")
+  if p_layers_target and p_neurons_target and p_learning_rate_target and p_epochs_target and run_perceptron:
+    model, metrics_df, y_train_pred, y_test_pred =  perceptron_classifier(X_train, X_test, y_train, y_test,
+                          layers_target = eval(p_layers_target), neurons_target = eval(p_neurons_target), learning_rate_target = eval(p_learning_rate_target),
+                          epochs_target = eval(p_epochs_target))
+    perceptron_model = model
+    st.subheader("Metrics")
+    st.dataframe(metrics_df)
+
+    st.subheader("Train predictions")
+    st.dataframe(pd.Series(y_train_pred).head())
+
+    st.subheader("Test predictions")
+    st.dataframe(pd.Series(y_test_pred).head())
+
+# ======= Доступные функции =======
+available_functions = {
+    'Логистическая регрессия': logistic_regression,
+    'Дерево решений': tree,
+    'Рандомный лес': random_forest,
+    'XGboost': xgboost,
+    'Метод Опорных Векторов': svc,
+    'KNN-классификатор': knn_classifier,
+    'Перцептрон-классификатор': perceptron_classifier
+}
+
+use_cv = st.sidebar.checkbox("Использовать кросс-валидацию", value=False)
+cv_folds = st.sidebar.slider("Количество фолдов", 2, 10, 5)
+
+
