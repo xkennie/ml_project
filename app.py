@@ -929,7 +929,7 @@ def prediction_interface():
         "Выберите модели для предсказания",
         options=list(available_models.keys()),
         default=list(available_models.keys())
-    
+    )
     if st.button("Выполнить предсказания"):
         predictions = pd.DataFrame()
         
