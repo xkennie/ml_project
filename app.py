@@ -1185,13 +1185,13 @@ with col7:
 
 # ======= Доступные функции =======
 available_functions = {
-    'Логистическая регрессия': logistic_regression,
-    'Дерево решений': tree,
-    'Рандомный лес': random_forest,
-    'XGboost': xgboost,
-    'Метод Опорных Векторов': svc,
-    'KNN-классификатор': knn_classifier,
-    'Перцептрон-классификатор': perceptron_classifier
+    'Логистическая регрессия': logreg_model,
+    'Дерево решений': tree_model,
+    'Рандомный лес': rf_model,
+    'XGboost': xgb_model,
+    'Метод Опорных Векторов': svc_model,
+    'KNN-классификатор': knn_model,
+    'Перцептрон-классификатор': perceptron_model
 }
 
 use_cv = st.sidebar.checkbox("Использовать кросс-валидацию", value=False)
