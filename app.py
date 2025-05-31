@@ -587,3 +587,479 @@ if st.session_state.df is not None:
                     st.dataframe(pd.concat([test_ids, X_test, y_test], axis=1))
             else:
                 st.error("Ошибка при подготовке данных")
+def plot_confusion_matrix(y_true, y_pred, title):
+    """Улучшенная визуализация матрицы ошибок"""
+    cm = confusion_matrix(y_true, y_pred)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False, ax=ax)
+    ax.set_title(title, pad=20)
+    ax.set_xlabel('Predicted labels')
+    ax.set_ylabel('True labels')
+    st.pyplot(fig, clear_figure=True)
+
+def evaluate_model(model, X_train, X_test, y_train, y_test, model_name, use_cv=False, cv_folds=5):
+    """Улучшенная функция оценки моделей с сохранением в session_state"""
+    try:
+        # Кросс-валидация
+        if use_cv:
+            cv_scores = cross_val_score(model, X_train, y_train, cv=cv_folds, scoring='accuracy')
+            st.write(f"Кросс-валидация (среднее accuracy): {cv_scores.mean():.4f} ± {cv_scores.std():.4f}")
+        
+        # Обучение модели
+        model.fit(X_train, y_train)
+        
+        # Предсказания
+        y_train_pred = model.predict(X_train)
+        y_test_pred = model.predict(X_test)
+        
+        # Расчет метрик
+        metrics = {
+            'Accuracy': [
+                accuracy_score(y_train, y_train_pred),
+                accuracy_score(y_test, y_test_pred)
+            ],
+            'Precision': [
+                precision_score(y_train, y_train_pred, average='weighted'),
+                precision_score(y_test, y_test_pred, average='weighted')
+            ],
+            'Recall': [
+                recall_score(y_train, y_train_pred, average='weighted'),
+                recall_score(y_test, y_test_pred, average='weighted')
+            ],
+            'F1': [
+                f1_score(y_train, y_train_pred, average='weighted'),
+                f1_score(y_test, y_test_pred, average='weighted')
+            ]
+        }
+        
+        metrics_df = pd.DataFrame(metrics, index=['Train', 'Test'])
+        
+        # Визуализация матриц ошибок
+        st.subheader(f"Матрицы ошибок для {model_name}")
+        col1, col2 = st.columns(2)
+        with col1:
+            plot_confusion_matrix(y_train, y_train_pred, f'Train: {model_name}')
+        with col2:
+            plot_confusion_matrix(y_test, y_test_pred, f'Test: {model_name}')
+        
+        # Сохраняем модель в session_state
+        if 'models' not in st.session_state:
+            st.session_state.models = {}
+        st.session_state.models[model_name] = model
+        
+        return model, metrics_df, y_train_pred, y_test_pred
+    
+    except Exception as e:
+        st.error(f"Ошибка при оценке модели {model_name}: {str(e)}")
+        return None, None, None, None
+
+# Модель логистической регрессии
+def logistic_regression(X_train, X_test, y_train, y_test, use_cv=False, cv_folds=5):
+    model = LogisticRegression(
+        max_iter=1000,
+        random_state=42,
+        multi_class='multinomial'
+    )
+    return evaluate_model(model, X_train, X_test, y_train, y_test, 
+                         "Logistic Regression", use_cv, cv_folds)
+
+# Модель дерева решений
+def decision_tree(X_train, X_test, y_train, y_test, max_depth=10, min_samples_split=10, use_cv=False, cv_folds=5):
+    model = DecisionTreeClassifier(
+        max_depth=max_depth,
+        min_samples_split=min_samples_split,
+        random_state=42
+    )
+    return evaluate_model(model, X_train, X_test, y_train, y_test,
+                         "Decision Tree", use_cv, cv_folds)
+
+# Модель случайного леса
+def random_forest(X_train, X_test, y_train, y_test, n_estimators=50, max_depth=10, 
+                 min_samples_split=10, use_cv=False, cv_folds=5):
+    model = RandomForestClassifier(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        min_samples_split=min_samples_split,
+        random_state=42
+    )
+    return evaluate_model(model, X_train, X_test, y_train, y_test,
+                         "Random Forest", use_cv, cv_folds)
+
+# Модель XGBoost
+def xgboost_model(X_train, X_test, y_train, y_test, learning_rate=0.01, n_estimators=50, 
+                 max_depth=5, use_cv=False, cv_folds=5):
+    # Кодируем метки для XGBoost
+    le = LabelEncoder()
+    y_train_encoded = le.fit_transform(y_train)
+    y_test_encoded = le.transform(y_test)
+    
+    model = XGBClassifier(
+        learning_rate=learning_rate,
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        random_state=42,
+        use_label_encoder=False,
+        eval_metric='mlogloss'
+    )
+    
+    model, metrics_df, _, _ = evaluate_model(model, X_train, X_test, 
+                                           y_train_encoded, y_test_encoded,
+                                           "XGBoost", use_cv, cv_folds)
+    
+    # Сохраняем кодировщик меток
+    st.session_state.label_encoder_xgboost = le
+    
+    return model, metrics_df, None, None
+
+# Модель KNN
+def knn_classifier(X_train, X_test, y_train, y_test, n_neighbors=5, use_cv=False, cv_folds=5):
+    model = KNeighborsClassifier(n_neighbors=n_neighbors)
+    return evaluate_model(model, X_train, X_test, y_train, y_test,
+                         "KNN", use_cv, cv_folds)
+
+# Модель SVM
+def svm_classifier(X_train, X_test, y_train, y_test, use_cv=False, cv_folds=5):
+    model = SVC(random_state=42, probability=True)
+    return evaluate_model(model, X_train, X_test, y_train, y_test,
+                         "SVM", use_cv, cv_folds)
+
+# Модель перцептрона
+def perceptron_classifier(X_train, X_test, y_train, y_test, layers=1, neurons=64, 
+                         learning_rate=0.01, epochs=10, use_cv=False, cv_folds=5):
+    # Кодируем метки для перцептрона
+    le = LabelEncoder()
+    y_train_encoded = le.fit_transform(y_train)
+    y_test_encoded = le.transform(y_test)
+    num_classes = len(le.classes_)
+    
+    # Преобразуем метки в one-hot encoding
+    y_train_onehot = to_categorical(y_train_encoded, num_classes=num_classes)
+    y_test_onehot = to_categorical(y_test_encoded, num_classes=num_classes)
+    
+    # Создаем модель
+    model = Sequential()
+    model.add(Dense(neurons, input_dim=X_train.shape[1], activation='relu'))
+    
+    for _ in range(layers - 1):
+        model.add(Dense(neurons, activation='relu'))
+    
+    model.add(Dense(num_classes, activation='softmax'))
+    
+    model.compile(
+        optimizer=Adam(learning_rate=learning_rate),
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    
+    # Обучение модели
+    history = model.fit(
+        X_train, y_train_onehot,
+        validation_data=(X_test, y_test_onehot),
+        epochs=epochs,
+        batch_size=32,
+        verbose=0
+    )
+    
+    # Предсказания
+    y_train_pred = np.argmax(model.predict(X_train, verbose=0), axis=1)
+    y_test_pred = np.argmax(model.predict(X_test, verbose=0), axis=1)
+    
+    # Обратное преобразование меток
+    y_train_pred = le.inverse_transform(y_train_pred)
+    y_test_pred = le.inverse_transform(y_test_pred)
+    
+    # Расчет метрик
+    metrics = {
+        'Accuracy': [
+            accuracy_score(y_train, y_train_pred),
+            accuracy_score(y_test, y_test_pred)
+        ],
+        'Precision': [
+            precision_score(y_train, y_train_pred, average='weighted'),
+            precision_score(y_test, y_test_pred, average='weighted')
+        ],
+        'Recall': [
+            recall_score(y_train, y_train_pred, average='weighted'),
+            recall_score(y_test, y_test_pred, average='weighted')
+        ],
+        'F1': [
+            f1_score(y_train, y_train_pred, average='weighted'),
+            f1_score(y_test, y_test_pred, average='weighted')
+        ]
+    }
+    
+    metrics_df = pd.DataFrame(metrics, index=['Train', 'Test'])
+    
+    # Визуализация
+    st.subheader(f"Матрицы ошибок для Perceptron")
+    col1, col2 = st.columns(2)
+    with col1:
+        plot_confusion_matrix(y_train, y_train_pred, 'Train: Perceptron')
+    with col2:
+        plot_confusion_matrix(y_test, y_test_pred, 'Test: Perceptron')
+    
+    # График обучения
+    st.subheader("График обучения")
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+    ax1.plot(history.history['accuracy'], label='Train')
+    ax1.plot(history.history['val_accuracy'], label='Validation')
+    ax1.set_title('Accuracy')
+    ax1.legend()
+    
+    ax2.plot(history.history['loss'], label='Train')
+    ax2.plot(history.history['val_loss'], label='Validation')
+    ax2.set_title('Loss')
+    ax2.legend()
+    
+    st.pyplot(fig, clear_figure=True)
+    
+    # Сохраняем модель и кодировщик
+    st.session_state.perceptron_model = model
+    st.session_state.label_encoder_perceptron = le
+    
+    return model, metrics_df, y_train_pred, y_test_pred
+
+# Функции ансамблирования
+def create_voting_ensemble(models, X_train, X_test, y_train, y_test):
+    """Создает ансамбль методом голосования"""
+    voting = VotingClassifier(
+        estimators=[(name, model) for name, model in models.items()],
+        voting='hard'
+    )
+    return evaluate_model(voting, X_train, X_test, y_train, y_test, "Voting Ensemble")
+
+def create_stacking_ensemble(models, X_train, X_test, y_train, y_test):
+    """Создает ансамбль методом стэкинга"""
+    stacking = StackingClassifier(
+        estimators=[(name, model) for name, model in models.items()],
+        final_estimator=LogisticRegression(max_iter=1000),
+        cv=5
+    )
+    return evaluate_model(stacking, X_train, X_test, y_train, y_test, "Stacking Ensemble")
+
+# Интерфейс для ансамблирования
+def ensemble_interface(X_train, X_test, y_train, y_test):
+    st.title("Ансамбли моделей")
+    
+    if 'models' not in st.session_state or not st.session_state.models:
+        st.warning("Сначала постройте хотя бы одну модель")
+        return
+    
+    available_models = st.session_state.models
+    selected_models = st.multiselect(
+        "Выберите модели для ансамбля",
+        options=list(available_models.keys()),
+        default=list(available_models.keys())
+    )
+    
+    if len(selected_models) < 2:
+        st.warning("Для ансамбля нужно выбрать хотя бы 2 модели")
+        return
+    
+    ensemble_type = st.selectbox(
+        "Тип ансамбля",
+        ["Голосование", "Стэкинг"]
+    )
+    
+    if st.button("Построить ансамбль"):
+        models_to_ensemble = {name: available_models[name] for name in selected_models}
+        
+        with st.spinner("Строим ансамбль..."):
+            if ensemble_type == "Голосование":
+                model, metrics, _, _ = create_voting_ensemble(
+                    models_to_ensemble, X_train, X_test, y_train, y_test
+                )
+            else:
+                model, metrics, _, _ = create_stacking_ensemble(
+                    models_to_ensemble, X_train, X_test, y_train, y_test
+                )
+            
+            st.session_state.ensemble_model = model
+            st.success("Ансамбль успешно построен!")
+            
+            st.subheader("Метрики ансамбля")
+            st.dataframe(metrics)
+
+# Интерфейс для предсказаний на новых данных
+def prediction_interface():
+    st.title("Предсказание на новых данных")
+    
+    uploaded_file = st.file_uploader("Загрузите новые данные (CSV или Excel)", 
+                                   type=["csv", "xlsx"])
+    
+    if not uploaded_file:
+        return
+    
+    # Загрузка данных
+    try:
+        if uploaded_file.name.endswith('.csv'):
+            new_data = pd.read_csv(uploaded_file, sep=st.session_state.sep_sign, 
+                                 decimal=st.session_state.decimal_sign)
+        else:
+            new_data = pd.read_excel(uploaded_file)
+        
+        st.success(f"Успешно загружено {len(new_data)} записей")
+        st.dataframe(new_data.head())
+    except Exception as e:
+        st.error(f"Ошибка при загрузке данных: {str(e)}")
+        return
+    
+    # Предобработка новых данных
+    try:
+        X_new = process_new_data(new_data)
+        if X_new is None:
+            st.error("Не удалось обработать новые данные")
+            return
+    except Exception as e:
+        st.error(f"Ошибка при обработке данных: {str(e)}")
+        return
+    
+    # Выбор моделей для предсказания
+    available_models = {}
+    if 'models' in st.session_state:
+        available_models.update(st.session_state.models)
+    if 'ensemble_model' in st.session_state:
+        available_models['Ensemble'] = st.session_state.ensemble_model
+    
+    if not available_models:
+        st.warning("Нет доступных моделей для предсказания")
+        return
+    
+    selected_models = st.multiselect(
+        "Выберите модели для предсказания",
+        options=list(available_models.keys()),
+        default=list(available_models.keys())
+    
+    if st.button("Выполнить предсказания"):
+        predictions = pd.DataFrame()
+        
+        for model_name in selected_models:
+            model = available_models[model_name]
+            
+            try:
+                # Особые случаи для моделей, требующих кодирования
+                if model_name == 'XGBoost' and 'label_encoder_xgboost' in st.session_state:
+                    le = st.session_state.label_encoder_xgboost
+                    pred = le.inverse_transform(model.predict(X_new))
+                elif model_name == 'Perceptron' and 'label_encoder_perceptron' in st.session_state:
+                    le = st.session_state.label_encoder_perceptron
+                    pred_proba = model.predict(X_new)
+                    pred = le.inverse_transform(np.argmax(pred_proba, axis=1))
+                else:
+                    pred = model.predict(X_new)
+                
+                predictions[model_name] = pred
+            except Exception as e:
+                st.error(f"Ошибка при предсказании с помощью {model_name}: {str(e)}")
+                continue
+        
+        # Голосование, если выбрано несколько моделей
+        if len(selected_models) > 1:
+            predictions['Majority_Vote'] = predictions.mode(axis=1)[0]
+        
+        st.subheader("Результаты предсказаний")
+        st.dataframe(predictions)
+        
+        # Кнопка скачивания
+        csv = predictions.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            "Скачать предсказания",
+            data=csv,
+            file_name='predictions.csv',
+            mime='text/csv'
+        )
+
+# Основной интерфейс моделей
+def models_interface(X_train, X_test, y_train, y_test):
+    st.title("Модели машинного обучения")
+    
+    use_cv = st.sidebar.checkbox("Использовать кросс-валидацию", value=False)
+    cv_folds = st.sidebar.slider("Количество фолдов", 2, 10, 5) if use_cv else 5
+    
+    # Выбор моделей через табы
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+        "Logistic Regression", "Decision Tree", "Random Forest", 
+        "XGBoost", "KNN", "SVM", "Perceptron"
+    ])
+    
+    with tab1:
+        st.subheader("Логистическая регрессия")
+        if st.button("Обучить Logistic Regression"):
+            with st.spinner("Обучение модели..."):
+                model, metrics, _, _ = logistic_regression(
+                    X_train, X_test, y_train, y_test, use_cv, cv_folds
+                )
+                st.dataframe(metrics)
+    
+    with tab2:
+        st.subheader("Дерево решений")
+        max_depth = st.number_input("max_depth", 1, 50, 10)
+        min_samples = st.number_input("min_samples_split", 2, 20, 10)
+        if st.button("Обучить Decision Tree"):
+            with st.spinner("Обучение модели..."):
+                model, metrics, _, _ = decision_tree(
+                    X_train, X_test, y_train, y_test, 
+                    max_depth, min_samples, use_cv, cv_folds
+                )
+                st.dataframe(metrics)
+    
+    with tab3:
+        st.subheader("Случайный лес")
+        n_estimators = st.number_input("n_estimators", 10, 500, 50)
+        max_depth = st.number_input("max_depth", 1, 50, 10)
+        min_samples = st.number_input("min_samples_split", 2, 20, 10)
+        if st.button("Обучить Random Forest"):
+            with st.spinner("Обучение модели..."):
+                model, metrics, _, _ = random_forest(
+                    X_train, X_test, y_train, y_test,
+                    n_estimators, max_depth, min_samples, use_cv, cv_folds
+                )
+                st.dataframe(metrics)
+    
+    with tab4:
+        st.subheader("XGBoost")
+        learning_rate = st.number_input("learning_rate", 0.001, 1.0, 0.01)
+        n_estimators = st.number_input("n_estimators", 10, 500, 50)
+        max_depth = st.number_input("max_depth", 1, 20, 5)
+        if st.button("Обучить XGBoost"):
+            with st.spinner("Обучение модели..."):
+                model, metrics, _, _ = xgboost_model(
+                    X_train, X_test, y_train, y_test,
+                    learning_rate, n_estimators, max_depth, use_cv, cv_folds
+                )
+                st.dataframe(metrics)
+    
+    with tab5:
+        st.subheader("KNN")
+        n_neighbors = st.number_input("n_neighbors", 1, 50, 5)
+        if st.button("Обучить KNN"):
+            with st.spinner("Обучение модели..."):
+                model, metrics, _, _ = knn_classifier(
+                    X_train, X_test, y_train, y_test,
+                    n_neighbors, use_cv, cv_folds
+                )
+                st.dataframe(metrics)
+    
+    with tab6:
+        st.subheader("Метод опорных векторов")
+        if st.button("Обучить SVM"):
+            with st.spinner("Обучение модели..."):
+                model, metrics, _, _ = svm_classifier(
+                    X_train, X_test, y_train, y_test,
+                    use_cv, cv_folds
+                )
+                st.dataframe(metrics)
+    
+    with tab7:
+        st.subheader("Перцептрон")
+        layers = st.number_input("Количество слоев", 1, 5, 2)
+        neurons = st.number_input("Нейронов в слое", 16, 256, 64)
+        learning_rate = st.number_input("learning_rate", 0.0001, 1.0, 0.01)
+        epochs = st.number_input("Количество эпох", 1, 100, 10)
+        if st.button("Обучить Perceptron"):
+            with st.spinner("Обучение модели..."):
+                model, metrics, _, _ = perceptron_classifier(
+                    X_train, X_test, y_train, y_test,
+                    layers, neurons, learning_rate, epochs, use_cv, cv_folds
+                )
+                st.dataframe(metrics)
