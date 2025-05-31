@@ -42,7 +42,7 @@ st.markdown("**Fast-touch classification-analytical tool**")
 st.markdown("---")
 
 # Информация о команде
-with st.expander("ℹО команде разработчиков"):
+with st.expander("ℹ О команде разработчиков"):
     st.markdown("""
     **Команда проекта:**
     - Константин Ильященко — Team Leader
@@ -89,7 +89,7 @@ if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
 
     st.write("Загруженный набор данных:")
-    st.dataframe(df.head())
+    st.dataframe(df)
     backup_df = df.copy()
  
 #if uploaded_file is not None:
@@ -234,8 +234,6 @@ if st.checkbox("Обработать пропущенные значения"): 
             st.metric("Исходное количество строк", len(backup_df))
         with col2:
             st.metric("Количество строк после обработки", len(df))
-
-        st.dataframe(df.head(10))
 # Выпадающий список для выбора метода обработки пропусков
 #missing_values_option = st.selectbox(
     #"Что делать с пропусками?",
@@ -252,13 +250,18 @@ if st.checkbox("Обработать пропущенные значения"): 
 #st.write(f"Исходное количество строк: {len(backup_df)}")
 #st.write(f"Количество строк после обработки: {len(df)}")
 #df = st.session_state.df
+
+def duplicate_rare_classes(df, target, threshold=5, multiplier=5):
+    duplicated = []
+    for cls, group in df.groupby(target):
+        if len(group) <= threshold:
+            duplicated.append(pd.concat([group] * multiplier, ignore_index=True))
+        else:
+            duplicated.append(group)
+    return pd.concat(duplicated, ignore_index=True)
+
 # Показать обработанный датафрейм
 st.dataframe(df)
-
-#Посмотреть данные перед работой
-st.title("Анализ данных")
-
-st.write(df.describe())
 
 # Анализ данных
 st.title("Визуальный анализ данных")
@@ -522,9 +525,10 @@ random_state = st.number_input(
 #  st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
 def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, dummy_cols,
                    balance_method, test_size, random_state):
-    if any(data[target_col].value_counts() < 10):
-        st.write("Есть малопредставленный класс, данные не пригодны для анализа.")
-        st.stop()
+    # if any(data[target_col].value_counts() < 10):
+    #     st.write("Есть малопредставленный класс, данные не пригодны для анализа.")
+    #     st.stop()
+    data = duplicate_rare_classes(df = data, target = target_col)
     # Выделяем признаки и таргет
     X = data[features]
     y = data[target_col]
