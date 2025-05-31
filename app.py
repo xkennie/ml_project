@@ -1188,7 +1188,7 @@ available_functions = {
     'Логистическая регрессия': logistic_regression,
     'Дерево решений': decision_tree,
     'Рандомный лес': random_forest,
-    'XGboost': xgboost,
+    'XGboost': xgboost_model,
     'Метод Опорных Векторов': svc,
     'KNN-классификатор': knn_classifier,
     'Перцептрон-классификатор': perceptron_classifier
