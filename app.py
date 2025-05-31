@@ -584,6 +584,6 @@ if st.session_state.df is not None:
                     st.metric("Тестовая выборка", f"{len(X_test)} строк")
                     st.write("Распределение классов:")
                     st.write(pd.Series(y_test).value_counts())
-                    st.dataframe(pd.concat([test_ids, pd.DataFrame(X_test), pd.Series(y_test.flatten())], axis=1))
+                    st.dataframe(pd.concat([test_ids, X_test, y_test], axis=1))
             else:
                 st.error("Ошибка при подготовке данных")
