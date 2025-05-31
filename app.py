@@ -1150,7 +1150,7 @@ with col6:
   st.subheader("SVC")
   run_svc = st.checkbox("Создать модель SVC!")
   if run_svc:
-    model, metrics_df, y_train_pred, y_test_pred = svc(X_train, X_test, y_train, y_test)
+    model, metrics_df, y_train_pred, y_test_pred = svm_classifier(X_train, X_test, y_train, y_test)
     svc_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
@@ -1189,7 +1189,7 @@ available_functions = {
     'Дерево решений': decision_tree,
     'Рандомный лес': random_forest,
     'XGboost': xgboost_model,
-    'Метод Опорных Векторов': svc,
+    'Метод Опорных Векторов': svm_classifier,
     'KNN-классификатор': knn_classifier,
     'Перцептрон-классификатор': perceptron_classifier
 }
