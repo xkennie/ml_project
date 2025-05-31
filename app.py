@@ -356,6 +356,7 @@ if st.session_state.df is not None:
 
     st.dataframe(
         desc.style.format({
+            'count': '{:d}',
             'mean': '{:.2f}',
             'std': '{:.2f}',
             'min': '{:.2f}',
@@ -474,7 +475,7 @@ if st.session_state.df is not None:
     # Анализ по классам
     if st.session_state.target_col:
         st.subheader(f"Анализ по классам ({st.session_state.target_col})")
-        class_stats = st.session_state.df.groupby(st.session_state.target_col).agg(['mean', 'count', 'nunique']).T
+        class_stats = st.session_state.df.groupby(st.session_state.target_col).agg(['mean', 'count', 'nunique'])
         st.dataframe(class_stats)
         
         fig, ax = plt.subplots()
