@@ -525,10 +525,12 @@ random_state = st.number_input(
 #  st.write(f"Размер тестовой выборки: {X_test.shape[0]}")
 def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, dummy_cols,
                    balance_method, test_size, random_state):
-    # if any(data[target_col].value_counts() < 10):
-    #     st.write("Есть малопредставленный класс, данные не пригодны для анализа.")
-    #     st.stop()
-    data = duplicate_rare_classes(df = data, target = target_col)
+    if any(data[target_col].value_counts() < 10):
+        st.warning("Есть малопредставленный класс, данные не пригодны для анализа.")
+        data = duplicate_rare_classes(df = data, target = target_col)
+        st.warning("Попробуйте использовать нижепредставленный набор данных при следующем запуске:")
+        st.dataframe(data)
+        st.stop()
     # Выделяем признаки и таргет
     X = data[features]
     y = data[target_col]
