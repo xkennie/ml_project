@@ -614,7 +614,7 @@ if st.checkbox("Подготовить данные"):
         st.subheader("Результаты предобработки")
         st.header("Детальный анализ")
         st.subheader(f"Анализ по классам ({target_col})")
-        class_stats = df.groupby(target_col).agg(['mean', 'count', 'nunique'])
+        df.groupby(target_col,as_index=False).mean().merge(pd.DataFrame(df[target_col].value_counts()).reset_index(), how='left')
         st.dataframe(class_stats)
         col1, col2 = st.columns(2)
         with col1:
