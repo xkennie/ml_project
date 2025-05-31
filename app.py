@@ -171,10 +171,10 @@ def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, du
         ids = data[id_cols].copy() if id_cols else None
 
         # Кодируем категориальный таргет
-        if not pd.api.types.is_numeric_dtype(y):
-            le = LabelEncoder()
-            y = le.fit_transform(y)
-            st.session_state.label_encoders['target'] = le
+        #if not pd.api.types.is_numeric_dtype(y):
+            #le = LabelEncoder()
+            #y = le.fit_transform(y)
+            #st.session_state.label_encoders['target'] = le
 
         # Разбиваем на train/test
         X_train, X_test, y_train, y_test = train_test_split(
@@ -579,7 +579,7 @@ if st.session_state.df is not None:
                     st.metric("Обучающая выборка", f"{len(X_train)} строк")
                     st.write("Распределение классов:")
                     st.write(pd.Series(y_train).value_counts())
-                    st.dataframe(pd.concat([train_ids, pd.DataFrame(X_train), pd.Series(y_train.flatten())], axis=1))
+                    st.dataframe(pd.concat([train_ids, X_train, y_train], axis=1))
                 with col2:
                     st.metric("Тестовая выборка", f"{len(X_test)} строк")
                     st.write("Распределение классов:")
