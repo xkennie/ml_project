@@ -1066,7 +1066,7 @@ with col1:
   st.subheader("Logistic Regression")
   run_logreg = st.checkbox("Создать модель Логистической Регрессии!")
   if run_logreg:
-    model, metrics_df, y_train_pred, y_test_pred  = logistic_regression(X_train, X_test, y_train, y_test)
+    model, metrics_df, y_train_pred, y_test_pred  = logistic_regression(st.session_state.X_train,st.session_state.X_test,st.session_state.y_train, st.session_state.y_test)
     logreg_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
@@ -1083,7 +1083,7 @@ with col2:
   minsamples = st.text_input("min_samples", value = 10)
   run_tree = st.checkbox("Создать модель дерева!")
   if deps and minsamples and run_tree:
-    model, metrics_df, y_train_pred, y_test_pred = decision_tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
+    model, metrics_df, y_train_pred, y_test_pred = decision_tree(st.session_state.X_train, st.session_state.X_test, st.session_state.y_train, st.session_state.y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
     tree_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
@@ -1101,7 +1101,7 @@ with col3:
   rf_minsamples = st.text_input("RF_min_samples", value = 10)
   run_rf = st.checkbox("Создать модель Случайного Леса!")
   if rf_estimators and rf_deps and rf_minsamples and run_rf:
-    model, metrics_df, y_train_pred, y_test_pred = random_forest(X_train, X_test, y_train, y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
+    model, metrics_df, y_train_pred, y_test_pred = random_forest(st.session_state.X_train, st.session_state.X_test, st.session_state.y_train, st.session_state.y_test, estimators_target = eval(rf_estimators), max_depth_target = eval(rf_deps), min_samples_split_target = eval(rf_minsamples))
     rf_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
