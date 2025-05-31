@@ -189,7 +189,7 @@ def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, du
             train_ids = ids.loc[X_train.index]
             test_ids = ids.loc[X_test.index]
         else:
-            train_ids, test_ids = None, None
+            train_ids, test_ids = X_train.index, X_test.index
 
         # 1. Логарифмирование
         for col in log_cols:
@@ -579,11 +579,11 @@ if st.session_state.df is not None:
                     st.metric("Обучающая выборка", f"{len(X_train)} строк")
                     st.write("Распределение классов:")
                     st.write(pd.Series(y_train).value_counts())
-                    st.dataframe(pd.concat([pd.Series(train_ids.flatten()), pd.DataFrame(X_train), pd.Series(y_train.flatten())], axis=1))
+                    st.dataframe(pd.concat(train_ids, pd.DataFrame(X_train), pd.Series(y_train.flatten())], axis=1))
                 with col2:
                     st.metric("Тестовая выборка", f"{len(X_test)} строк")
                     st.write("Распределение классов:")
                     st.write(pd.Series(y_test).value_counts())
-                    st.dataframe(pd.concat([pd.Series(test_ids.flatten()), pd.DataFrame(X_test), pd.Series(y_test.flatten())], axis=1))
+                    st.dataframe(pd.concat([test_ids, pd.DataFrame(X_test), pd.Series(y_test.flatten())], axis=1))
             else:
                 st.error("Ошибка при подготовке данных")
