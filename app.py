@@ -475,7 +475,7 @@ if st.session_state.df is not None:
     # Анализ по классам
     if st.session_state.target_col:
         st.subheader(f"Анализ по классам ({st.session_state.target_col})")
-        class_stats = st.session_state.df.groupby(st.session_state.target_col).agg(['mean', 'count', 'nunique'])
+        class_stats = st.session_state.df.groupby(st.session_state.target_col,as_index=False).mean().merge(pd.DataFrame(st.session_state.df[st.session_state.target_col].value_counts()).reset_index(), how='left')
         st.dataframe(class_stats)
         
         fig, ax = plt.subplots()
