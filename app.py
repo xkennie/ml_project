@@ -356,7 +356,7 @@ if st.session_state.df is not None:
 
     st.dataframe(
         desc.style.format({
-            'count': '{:d}',
+            'count': '{:.1f}',
             'mean': '{:.2f}',
             'std': '{:.2f}',
             'min': '{:.2f}',
