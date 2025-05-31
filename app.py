@@ -403,7 +403,7 @@ if st.session_state.df is not None:
     # Отображение выбранного графика
     if selected_col:
         plt.style.use('dark_background')
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=(8, 6))
     
         if chart_type == "Гистограмма":
             sns.histplot(st.session_state.df[selected_col], bins=bins, kde=True, ax=ax)
@@ -479,6 +479,7 @@ if st.session_state.df is not None:
         st.dataframe(class_stats)
         
         fig, ax = plt.subplots()
+        plt.figsize = (8,6)
         sns.countplot(x=st.session_state.target_col, data=st.session_state.df, ax=ax)
         st.pyplot(fig)
 
