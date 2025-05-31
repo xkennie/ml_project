@@ -478,10 +478,6 @@ if st.session_state.df is not None:
         class_stats = st.session_state.df.groupby(st.session_state.target_col,as_index=False).mean().merge(pd.DataFrame(st.session_state.df[st.session_state.target_col].value_counts()).reset_index(), how='left')
         st.dataframe(class_stats)
         
-        fig, ax = plt.subplots()
-        plt.figsize = (8,6)
-        sns.countplot(x=st.session_state.target_col, data=st.session_state.df, ax=ax)
-        st.pyplot(fig)
 
     id_cols = st.multiselect(
         "Выберите ID-столбцы (не будут использоваться в модели):",
