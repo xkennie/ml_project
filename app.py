@@ -367,7 +367,12 @@ if st.session_state.df is not None:
         }),
         use_container_width=True
     )
-    
+    # Выбор типа графика
+    chart_type = st.radio(
+    "Тип визуализации распределения:",
+    ["Гистограмма", "Ящик с усами (Boxplot)", "Плотность распределения"],
+    horizontal=True
+)
 
     # Графики распределения
     st.subheader("Распределение признаков")
