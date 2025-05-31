@@ -853,8 +853,8 @@ def perceptron_classifier(X_train, X_test, y_train, y_test,
     y_train_onehot = to_categorical(y_train_encoded)
     y_test_onehot = to_categorical(y_test_encoded)
 
-    #model = Sequential()
-    model = Classifier()
+    model = Sequential()
+    #model = Classifier()
     model.add(Dense(neurons_target, input_dim=X_train.shape[1], activation='relu'))
 
     for _ in range(layers_target ):
