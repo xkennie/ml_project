@@ -579,11 +579,11 @@ if st.session_state.df is not None:
                     st.metric("Обучающая выборка", f"{len(X_train)} строк")
                     st.write("Распределение классов:")
                     st.write(pd.Series(y_train).value_counts())
-                    st.dataframe(pd.concat([pd.DataFrame(train_ids), pd.DataFrame(X_train), pd.DataFrame(y_train)], axis=1))
+                    st.dataframe(pd.concat([pd.Series(train_ids), pd.DataFrame(X_train), pd.Series(y_train)], axis=1))
                 with col2:
                     st.metric("Тестовая выборка", f"{len(X_test)} строк")
                     st.write("Распределение классов:")
                     st.write(pd.Series(y_test).value_counts())
-                    st.dataframe(pd.concat([pd.DataFrame(test_ids), pd.DataFrame(X_test), pd.DataFrame(y_test)], axis=1))
+                    st.dataframe(pd.concat([pd.Series(test_ids), pd.DataFrame(X_test), pd.Series(y_test)], axis=1))
             else:
                 st.error("Ошибка при подготовке данных")
