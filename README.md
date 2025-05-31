@@ -2,8 +2,7 @@
 *"ML-Fast-Touch Streamlit-приложение Классификатор."*
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28.0-FF4B4B)](https://streamlit.io/)
-[![Приложение](https://img.shields.io/badge/Streamlit-1.0.0-FF4B4B)](https://mlproject-dsb8mfka6pvatnvdljktcc.streamlit.app/)
+[![Приложение](https://img.shields.io/badge/Streamlit-1.28.0-FF4B4B)](https://mlproject-dsb8mfka6pvatnvdljktcc.streamlit.app/)
 ### **🚀 AutoML Classification Tool**  
 **📊 Простое и мощное решение для автоматической классификации данных!**  
 
