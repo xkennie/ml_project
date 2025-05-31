@@ -261,6 +261,9 @@ st.title("Анализ данных")
 st.write(df.describe())
 
 st.header("Детальный анализ")
+st.subheader(f"Анализ по классам ({target_col})")
+class_stats = df.groupby(target_col).agg(['mean', 'count', 'nunique'])
+st.dataframe(class_stats)
 
 # Анализ данных
 st.title("Визуальный анализ данных")
