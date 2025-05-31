@@ -1083,7 +1083,7 @@ with col2:
   minsamples = st.text_input("min_samples", value = 10)
   run_tree = st.checkbox("Создать модель дерева!")
   if deps and minsamples and run_tree:
-    model, metrics_df, y_train_pred, y_test_pred = tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
+    model, metrics_df, y_train_pred, y_test_pred = decision_tree(X_train, X_test, y_train, y_test, max_depth_target = eval(deps), min_samples_split_target = eval(minsamples))
     tree_model = model
     st.subheader("Metrics")
     st.dataframe(metrics_df)
@@ -1185,13 +1185,13 @@ with col7:
 
 # ======= Доступные функции =======
 available_functions = {
-    'Логистическая регрессия': logreg_model,
-    'Дерево решений': tree_model,
-    'Рандомный лес': rf_model,
-    'XGboost': xgb_model,
-    'Метод Опорных Векторов': svc_model,
-    'KNN-классификатор': knn_model,
-    'Перцептрон-классификатор': perceptron_model
+    'Логистическая регрессия': logistic_regression,
+    'Дерево решений': decision_tree,
+    'Рандомный лес': random_forest,
+    'XGboost': xgboost,
+    'Метод Опорных Векторов': svc,
+    'KNN-классификатор': knn_classifier,
+    'Перцептрон-классификатор': perceptron_classifier
 }
 
 use_cv = st.sidebar.checkbox("Использовать кросс-валидацию", value=False)
