@@ -579,7 +579,7 @@ if st.session_state.df is not None:
                     st.metric("Обучающая выборка", f"{len(X_train)} строк")
                     st.write("Распределение классов:")
                     st.write(pd.Series(y_train).value_counts())
-                    st.dataframe(pd.concat(train_ids, pd.DataFrame(X_train), pd.Series(y_train.flatten())], axis=1))
+                    st.dataframe(pd.concat([train_ids, pd.DataFrame(X_train), pd.Series(y_train.flatten())], axis=1))
                 with col2:
                     st.metric("Тестовая выборка", f"{len(X_test)} строк")
                     st.write("Распределение классов:")
