@@ -1060,3 +1060,4 @@ def models_interface(X_train, X_test, y_train, y_test):
                     layers, neurons, learning_rate, epochs, use_cv, cv_folds
                 )
                 st.dataframe(metrics)
+    models_interface(st.session_state.X_train, st.session_state.X_test, st.session_state.y_train, st.session_state.y_test)
