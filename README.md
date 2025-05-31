@@ -1,4 +1,4 @@
-# Название проекта 🚀 
+# Ultimate Easy Classification Tool 🚀 
 *"ML-Fast-Touch Streamlit-приложение Классификатор."*
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/)
