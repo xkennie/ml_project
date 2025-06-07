@@ -626,7 +626,7 @@ if st.checkbox("Подготовить данные"):
             class_stats = df.groupby(target_col,as_index=False).mean().merge(pd.DataFrame(df[target_col].value_counts()).reset_index(), how='left')
             st.dataframe(class_stats)
         except: 
-            continue
+            pass
         col1, col2 = st.columns(2)
         with col1:
             st.metric("Обучающая выборка", f"{len(X_train)} наблюдений")
