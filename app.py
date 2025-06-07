@@ -558,7 +558,7 @@ def preprocess_data(data, target_col, id_cols, features, norm_cols, log_cols, du
 
     # 2. One-hot кодирование
     if dummy_cols:
-        encoder = OneHotEncoder(drop='first', sparse=False)
+        encoder = OneHotEncoder(drop='first', sparse_output=False)
         train_encoded = encoder.fit_transform(X_train[dummy_cols])
         test_encoded = encoder.transform(X_test[dummy_cols])
 
