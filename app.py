@@ -490,7 +490,7 @@ with st.expander("Настройки предобработки данных", e
         options=categorical_cols,
         help="Создаст dummy-переменные (n-1) для выбранных категориальных признаков"
     )
-
+    df[target_col] = pd.Categorical(df[target_col])
     st.subheader("Балансировка классов")
     if pd.api.types.is_numeric_dtype(df[target_col]):
         st.warning("Балансировка классов доступна только для категориального таргета")
